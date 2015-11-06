@@ -11,7 +11,7 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-public class ResponseWrapper
+public class Auth0ResponseWrapper
     extends HttpServletResponseWrapper
 {
 
@@ -27,7 +27,7 @@ public class ResponseWrapper
      * @param response
      * @throws IllegalArgumentException if the response is null
      */
-    public ResponseWrapper( final HttpServletResponse response, final String callbackUrl, final String refererUrl )
+    public Auth0ResponseWrapper( final HttpServletResponse response, final String callbackUrl, final String refererUrl )
     {
         super( response );
         this.callbackUrl = callbackUrl;
@@ -137,10 +137,10 @@ public class ResponseWrapper
         throws UnsupportedEncodingException
     {
         super.setStatus( 303 );
-        super.setHeader( "Location", BearerAuthFilter.AUTH0_DOMAIN + "/login" +
-            "?client=" + BearerAuthFilter.CLIENT_ID +
+        super.setHeader( "Location", Auth0Filter.AUTH0_DOMAIN + "/login" +
+            "?client=" + Auth0Filter.CLIENT_ID +
             "&protocol=oauth2" +
-            "&redirect_uri=" + URLEncoder.encode( refererUrl + "?_referer=" + refererUrl, "UTF-8" ) +
+            "&redirect_uri=" + URLEncoder.encode( callbackUrl + "?_callback=" + refererUrl, "UTF-8" ) +
             "&response_type=code" +
             "&connection=Username-Password-Authentication" +
             "&scope=openid%20email" );
