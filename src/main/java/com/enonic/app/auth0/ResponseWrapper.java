@@ -137,8 +137,8 @@ public class ResponseWrapper
         throws UnsupportedEncodingException
     {
         super.setStatus( 303 );
-        super.setHeader( "Location", BearerAuthFilter.AUTH0_DOMAIN + "/login" +
-            "?client=" + BearerAuthFilter.CLIENT_ID +
+        super.setHeader( "Location", Auth0Filter.AUTH0_DOMAIN + "/login" +
+            "?client=" + Auth0Filter.CLIENT_ID +
             "&protocol=oauth2" +
             "&redirect_uri=" + URLEncoder.encode( callbackUrl + "?_callback=" + refererUrl, "UTF-8" ) +
             "&response_type=code" +
