@@ -36,7 +36,7 @@ import com.enonic.xp.web.filter.OncePerRequestFilter;
 public class BearerAuthFilter
     extends OncePerRequestFilter
 {
-    static final String CALLBACK_URL = "http://localhost:8080/auth0/forbidden";
+    static final String CALLBACK_URL = "http://localhost:8080/auth0";
 
     static final String AUTH0_DOMAIN = "https://auth0-test.eu.auth0.com";
 
@@ -81,6 +81,15 @@ public class BearerAuthFilter
             if ( email instanceof String )
             {
                 login( req, (String) email );
+            }
+
+            //If there is a page callback
+            final String callback = req.getParameter( "_callback" );
+            if ( callback != null )
+            {
+                res.setStatus( 303 );
+                res.setHeader( "Location", callback );
+                return;
             }
         }
 
