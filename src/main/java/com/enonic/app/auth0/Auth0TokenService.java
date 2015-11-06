@@ -85,7 +85,6 @@ public class Auth0TokenService
         return ContextBuilder.from( ContextAccessor.current() ).authInfo( authInfo ).build().callWith( runnable );
     }
 
-
     @Reference
     public void setSecurityService( final SecurityService securityService )
     {

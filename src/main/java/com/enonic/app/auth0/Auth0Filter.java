@@ -43,8 +43,8 @@ public class Auth0Filter
         }
 
         //Executes the rest of the filters with a wrapped response
-        final ResponseWrapper responseWrapper = new ResponseWrapper( res, CALLBACK_URL, req.getRequestURL().toString() );
-        chain.doFilter( req, responseWrapper );
+        final Auth0ResponseWrapper auth0ResponseWrapper = new Auth0ResponseWrapper( res, CALLBACK_URL, req.getRequestURL().toString() );
+        chain.doFilter( req, auth0ResponseWrapper );
     }
 
     private String getToken( final HttpServletRequest httpServletRequest )
@@ -66,7 +66,6 @@ public class Auth0Filter
                 }
             }
         }
-
         return null;
     }
 

@@ -11,7 +11,7 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-public class ResponseWrapper
+public class Auth0ResponseWrapper
     extends HttpServletResponseWrapper
 {
 
@@ -27,7 +27,7 @@ public class ResponseWrapper
      * @param response
      * @throws IllegalArgumentException if the response is null
      */
-    public ResponseWrapper( final HttpServletResponse response, final String callbackUrl, final String refererUrl )
+    public Auth0ResponseWrapper( final HttpServletResponse response, final String callbackUrl, final String refererUrl )
     {
         super( response );
         this.callbackUrl = callbackUrl;
