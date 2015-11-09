@@ -19,15 +19,11 @@ import com.enonic.xp.web.filter.OncePerRequestFilter;
 public class Auth0Filter
     extends OncePerRequestFilter
 {
-    static final String CALLBACK_URL = "http://localhost:8080/auth0";
-
-    static final String AUTH0_DOMAIN = "https://auth0-test.eu.auth0.com";
-
-    static final String CLIENT_ID = "XVe71J5BHZ0o8QPKQEYs7bx2Xa5FHkqL";
-
     private static final String BEARER_SCHEME = "Bearer";
 
-    private Auth0TokenService auth0TokenService;
+    private Auth0TokenService tokenService;
+
+    private Auth0ConfigurationService configurationService;
 
     @Override
     protected void doHandle( final HttpServletRequest req, final HttpServletResponse res, final FilterChain chain )
@@ -39,11 +35,13 @@ public class Auth0Filter
         //If there is a token specified
         if ( token != null )
         {
-            this.auth0TokenService.handleToken( req, token );
+            this.tokenService.handleToken( req, token );
         }
 
         //Executes the rest of the filters with a wrapped response
-        final Auth0ResponseWrapper auth0ResponseWrapper = new Auth0ResponseWrapper( res, CALLBACK_URL, req.getRequestURL().toString() );
+        final Auth0ResponseWrapper auth0ResponseWrapper =
+            new Auth0ResponseWrapper( res, configurationService.getAppDomain(), configurationService.getAppClientId(),
+                                      configurationService.getCallbackUrl(), req.getRequestURL().toString() );
         chain.doFilter( req, auth0ResponseWrapper );
     }
 
@@ -70,8 +68,14 @@ public class Auth0Filter
     }
 
     @Reference
-    public void setAuth0TokenService( final Auth0TokenService auth0TokenService )
+    public void setAuth0TokenService( final Auth0TokenService tokenService )
     {
-        this.auth0TokenService = auth0TokenService;
+        this.tokenService = tokenService;
+    }
+
+    @Reference
+    public void setAuth0ConfigurationService( final Auth0ConfigurationService configurationService )
+    {
+        this.configurationService = configurationService;
     }
 }

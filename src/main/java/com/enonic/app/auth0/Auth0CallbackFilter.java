@@ -21,15 +21,11 @@ import com.enonic.xp.web.filter.OncePerRequestFilter;
 public class Auth0CallbackFilter
     extends OncePerRequestFilter
 {
-    static final String AUTH0_DOMAIN = "https://auth0-test.eu.auth0.com";
-
-    private static final String SECRET = "Wr5vaQm2rg2HNUGLwW4hal3qaRK-Ud5Papotz61Fji5Df-NqbbCl8SFRfm-qbg-M";
-
-    static final String CLIENT_ID = "XVe71J5BHZ0o8QPKQEYs7bx2Xa5FHkqL";
-
     private static final Pattern TOKEN_PATTERN = Pattern.compile( "\"id_token\":\"([^\"]+)\"" );
 
-    private Auth0TokenService auth0TokenService;
+    private Auth0TokenService tokenService;
+
+    private Auth0ConfigurationService configurationService;
 
     @Override
     protected void doHandle( final HttpServletRequest req, final HttpServletResponse res, final FilterChain chain )
@@ -41,7 +37,7 @@ public class Auth0CallbackFilter
         //If there is a token specified
         if ( token != null )
         {
-            this.auth0TokenService.handleToken( req, token );
+            this.tokenService.handleToken( req, token );
         }
 
         //If there is a page callback
@@ -66,10 +62,10 @@ public class Auth0CallbackFilter
         {
             //Retrieves the token
             final String tokenRequestResult = new HttpRequest().
-                setUrl( AUTH0_DOMAIN + "/oauth/token" ).
-                addParam( "client_id", CLIENT_ID ).
+                setUrl( configurationService.getAppDomain() + "/oauth/token" ).
+                addParam( "client_id", configurationService.getAppClientId() ).
                 addParam( "redirect_uri", httpServletRequest.getRequestURL().toString() ).
-                addParam( "client_secret", SECRET ).
+                addParam( "client_secret", configurationService.getAppSecret() ).
                 addParam( "code", callbackCode ).
                 addParam( "grant_type", "authorization_code" ).
                 addParam( "scope", "openid email" ).
@@ -88,7 +84,13 @@ public class Auth0CallbackFilter
     @Reference
     public void setAuth0TokenService( final Auth0TokenService auth0TokenService )
     {
-        this.auth0TokenService = auth0TokenService;
+        this.tokenService = auth0TokenService;
+    }
+
+    @Reference
+    public void setAuth0ConfigurationService( final Auth0ConfigurationService configurationService )
+    {
+        this.configurationService = configurationService;
     }
 
 }
