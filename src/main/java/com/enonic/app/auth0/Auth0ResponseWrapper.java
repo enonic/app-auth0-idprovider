@@ -15,6 +15,10 @@ public class Auth0ResponseWrapper
     extends HttpServletResponseWrapper
 {
 
+    private final String domain;
+
+    private final String clientId;
+
     private final String callbackUrl;
 
     private final String refererUrl;
@@ -27,9 +31,12 @@ public class Auth0ResponseWrapper
      * @param response
      * @throws IllegalArgumentException if the response is null
      */
-    public Auth0ResponseWrapper( final HttpServletResponse response, final String callbackUrl, final String refererUrl )
+    public Auth0ResponseWrapper( final HttpServletResponse response, final String domain, final String clientId, final String callbackUrl,
+                                 final String refererUrl )
     {
         super( response );
+        this.domain = domain;
+        this.clientId = clientId;
         this.callbackUrl = callbackUrl;
         this.refererUrl = refererUrl;
     }
@@ -137,8 +144,8 @@ public class Auth0ResponseWrapper
         throws UnsupportedEncodingException
     {
         super.setStatus( 303 );
-        super.setHeader( "Location", Auth0Filter.AUTH0_DOMAIN + "/login" +
-            "?client=" + Auth0Filter.CLIENT_ID +
+        super.setHeader( "Location", domain + "/login" +
+            "?client=" + clientId +
             "&protocol=oauth2" +
             "&redirect_uri=" + URLEncoder.encode( callbackUrl + "?_callback=" + refererUrl, "UTF-8" ) +
             "&response_type=code" +

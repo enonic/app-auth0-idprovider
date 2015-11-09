@@ -30,21 +30,19 @@ import com.enonic.xp.security.auth.VerifiedEmailAuthToken;
 @Component(service = Auth0TokenService.class)
 public class Auth0TokenService
 {
-    private static final String SECRET = "Wr5vaQm2rg2HNUGLwW4hal3qaRK-Ud5Papotz61Fji5Df-NqbbCl8SFRfm-qbg-M";
-
-    static final String CLIENT_ID = "XVe71J5BHZ0o8QPKQEYs7bx2Xa5FHkqL";
-
     private static final String EMAIL_KEY = "email";
 
     private SecurityService securityService;
+
+    private Auth0ConfigurationService configurationService;
 
     private JWTVerifier jwtVerifier;
 
     @Activate
     public void activate()
     {
-        final byte[] secretDecoded = new Base64( true ).decode( SECRET );
-        jwtVerifier = new JWTVerifier( secretDecoded, CLIENT_ID );
+        final byte[] secretDecoded = new Base64( true ).decode( configurationService.getAppSecret() );
+        jwtVerifier = new JWTVerifier( secretDecoded, configurationService.getAppClientId() );
     }
 
     public void handleToken( final HttpServletRequest req, final String token )
@@ -89,5 +87,13 @@ public class Auth0TokenService
     public void setSecurityService( final SecurityService securityService )
     {
         this.securityService = securityService;
+        System.out.println( "test1" );
+    }
+
+    @Reference
+    public void setAuth0ConfigurationService( final Auth0ConfigurationService configurationService )
+    {
+        this.configurationService = configurationService;
+        System.out.println( "test2" );
     }
 }
