@@ -5,7 +5,7 @@
   <timestamp>2015-11-04T08:13:30.328Z</timestamp>
   <inheritPermissions>false</inheritPermissions>
   <permissions>
-    <principal key="role:cms.cm.app">
+    <principal key="role:system.authenticated">
       <allow type="array">
         <value>READ</value>
       </allow>

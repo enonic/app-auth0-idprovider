@@ -27,6 +27,8 @@ public class Auth0ConfigurationService
         Preconditions.checkNotNull( getAppDomain(), "auth0.app.domainUrl property is mandatory" );
         Preconditions.checkNotNull( getAppClientId(), "auth0.app.clientId property is mandatory" );
         Preconditions.checkNotNull( getAppSecret(), "auth0.app.secret property is mandatory" );
+        Preconditions.checkNotNull( getUserStore(), "auth0.userStore property is mandatory" );
+        Preconditions.checkNotNull( getDefaultRole(), "auth0.defaultRole property is mandatory" );
     }
 
     public String getCallbackUrl()
@@ -47,5 +49,15 @@ public class Auth0ConfigurationService
     public String getAppSecret()
     {
         return configuration.get( "auth0.app.secret" );
+    }
+
+    public String getUserStore()
+    {
+        return configuration.get( "auth0.userStore" );
+    }
+
+    public String getDefaultRole()
+    {
+        return configuration.get( "auth0.defaultRole" );
     }
 }

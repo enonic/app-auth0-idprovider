@@ -68,7 +68,7 @@ public class Auth0CallbackFilter
                 addParam( "client_secret", configurationService.getAppSecret() ).
                 addParam( "code", callbackCode ).
                 addParam( "grant_type", "authorization_code" ).
-                addParam( "scope", "openid email" ).
+                addParam( "scope", "openid nickname email" ).
                 execute();
 
             final Matcher tokenMatcher = TOKEN_PATTERN.matcher( tokenRequestResult );

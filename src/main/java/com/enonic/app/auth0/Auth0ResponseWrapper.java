@@ -150,7 +150,7 @@ public class Auth0ResponseWrapper
             "&redirect_uri=" + URLEncoder.encode( callbackUrl + "?_callback=" + refererUrl, "UTF-8" ) +
             "&response_type=code" +
             "&connection=Username-Password-Authentication" +
-            "&scope=openid%20email" );
+            "&scope=openid%20nickname%20email" );
         redirected = true;
     }
 }
