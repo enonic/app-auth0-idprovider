@@ -1,63 +1,16 @@
 package com.enonic.app.auth0;
 
-import java.util.Map;
+import com.enonic.xp.security.PrincipalKeys;
 
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-
-import com.google.common.base.Preconditions;
-
-import com.enonic.xp.config.ConfigBuilder;
-import com.enonic.xp.config.Configuration;
-
-@Component(service = Auth0ConfigurationService.class, configurationPid = "com.enonic.app.auth0")
-public class Auth0ConfigurationService
+public interface Auth0ConfigurationService
 {
-    private Configuration configuration;
+    public String getAppDomain( final String path );
 
-    @Activate
-    public void activate( Map<String, String> configuration )
-    {
-        this.configuration = ConfigBuilder.create().
-            load( getClass(), "default.properties" ).
-            addAll( configuration ).
-            build();
+    public String getAppClientId( final String path );
 
-        Preconditions.checkNotNull( getCallbackUrl(), "auth0.callbackUrl property is mandatory" );
-        Preconditions.checkNotNull( getAppDomain(), "auth0.app.domainUrl property is mandatory" );
-        Preconditions.checkNotNull( getAppClientId(), "auth0.app.clientId property is mandatory" );
-        Preconditions.checkNotNull( getAppSecret(), "auth0.app.secret property is mandatory" );
-        Preconditions.checkNotNull( getUserStore(), "auth0.userStore property is mandatory" );
-        Preconditions.checkNotNull( getDefaultRole(), "auth0.defaultRole property is mandatory" );
-    }
+    public String getAppSecret( final String path );
 
-    public String getCallbackUrl()
-    {
-        return configuration.get( "auth0.callbackUrl" );
-    }
+    public String getUserStore( final String path );
 
-    public String getAppDomain()
-    {
-        return configuration.get( "auth0.app.domainUrl" );
-    }
-
-    public String getAppClientId()
-    {
-        return configuration.get( "auth0.app.clientId" );
-    }
-
-    public String getAppSecret()
-    {
-        return configuration.get( "auth0.app.secret" );
-    }
-
-    public String getUserStore()
-    {
-        return configuration.get( "auth0.userStore" );
-    }
-
-    public String getDefaultRole()
-    {
-        return configuration.get( "auth0.defaultRole" );
-    }
+    public PrincipalKeys getDefaultRoles( final String path );
 }

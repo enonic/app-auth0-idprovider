@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<auth>
+  <config>
+    <input name="userStore" type="UserStoreSelector">
+      <label>Userstore</label>
+      <occurrences minimum="1" maximum="1"/>
+      <config>
+        <relationship-type>system:reference</relationship-type>
+      </config>
+    </input>
+    <item-set name="app">
+      <label>Application</label>
+      <occurrences minimum="1" maximum="1"/>
+      <items>
+        <input name="domain" type="TextLine">
+          <label>Domain</label>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="clientId" type="TextLine">
+          <label>Client ID</label>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="secret" type="TextLine">
+          <label>App secret</label>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+      </items>
+    </item-set>
+    <input name="defaultRoles" type="TextLine">
+      <label>New user role</label>
+      <occurrences minimum="1" maximum="0"/>
+    </input>
+  </config>
+</auth>
