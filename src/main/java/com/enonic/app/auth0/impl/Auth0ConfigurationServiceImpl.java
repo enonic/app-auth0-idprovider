@@ -25,7 +25,6 @@ public class Auth0ConfigurationServiceImpl
 {
     private SecurityService securityService;
 
-
     @Override
     public String getAppDomain( final String path )
     {
