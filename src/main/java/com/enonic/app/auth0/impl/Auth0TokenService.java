@@ -1,4 +1,4 @@
-package com.enonic.app.auth0;
+package com.enonic.app.auth0.impl;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -11,7 +11,6 @@ import java.util.concurrent.Callable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -19,10 +18,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
 import com.auth0.jwt.internal.org.apache.commons.codec.binary.Base64;
 
+import com.enonic.app.auth0.Auth0ConfigurationService;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.security.CreateUserParams;
 import com.enonic.xp.security.PrincipalKey;
+import com.enonic.xp.security.PrincipalKeys;
 import com.enonic.xp.security.PrincipalRelationship;
 import com.enonic.xp.security.RoleKeys;
 import com.enonic.xp.security.SecurityService;
@@ -42,18 +43,14 @@ public class Auth0TokenService
 
     private Auth0ConfigurationService configurationService;
 
-    private JWTVerifier jwtVerifier;
-
-    @Activate
-    public void activate()
-    {
-        final byte[] secretDecoded = new Base64( true ).decode( configurationService.getAppSecret() );
-        jwtVerifier = new JWTVerifier( secretDecoded, configurationService.getAppClientId() );
-    }
-
-    public void handleToken( final HttpServletRequest req, final String token )
+    public void handleToken( final HttpServletRequest httpServletRequest, final String token )
         throws SignatureException, NoSuchAlgorithmException, JWTVerifyException, InvalidKeyException, IOException
     {
+        //Creates verifier
+        final String path = httpServletRequest.getParameter( "state" );
+        final byte[] secretDecoded = new Base64( true ).decode( configurationService.getAppSecret( path ) );
+        final JWTVerifier jwtVerifier = new JWTVerifier( secretDecoded, configurationService.getAppClientId( path ) );
+
         //Verifies the token and retrieve the email address
         Map<String, Object> decoded = jwtVerifier.verify( token );
         final Object nickname = decoded.get( NICKNAME_KEY );
@@ -62,13 +59,14 @@ public class Auth0TokenService
         //Login the user linked to this email address
         if ( nickname instanceof String && email instanceof String )
         {
-            login( req, (String) nickname, (String) email );
+            login( httpServletRequest, (String) nickname, (String) email );
         }
     }
 
-    private void login( final HttpServletRequest req, String userId, String email )
+    private void login( final HttpServletRequest httpServletRequest, String userId, String email )
     {
-        final String userStoreId = configurationService.getUserStore();
+        final String path = httpServletRequest.getParameter( "state" );
+        final String userStoreId = configurationService.getUserStore( path );
         final UserStoreKey userStoreKey = UserStoreKey.from( userStoreId );
         final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, userId );
 
@@ -79,7 +77,7 @@ public class Auth0TokenService
         if ( !user.isPresent() )
         {
             //Creates the user
-            final PrincipalKey defaultRole = PrincipalKey.ofRole( configurationService.getDefaultRole() );
+            final PrincipalKeys defaultRoles = configurationService.getDefaultRoles( path );
             final CreateUserParams createUserParams = CreateUserParams.create().
                 login( userId ).
                 displayName( userId ).
@@ -88,7 +86,10 @@ public class Auth0TokenService
                 build();
             runAs( () -> {
                 securityService.createUser( createUserParams );
-                securityService.addRelationship( PrincipalRelationship.from( defaultRole ).to( principalKey ) );
+                for ( PrincipalKey defaultRole : defaultRoles )
+                {
+                    securityService.addRelationship( PrincipalRelationship.from( defaultRole ).to( principalKey ) );
+                }
                 return null;
             }, RoleKeys.ADMIN );
 
@@ -103,7 +104,7 @@ public class Auth0TokenService
             runAs( () -> securityService.authenticate( verifiedUsernameAuthToken ), RoleKeys.AUTHENTICATED );
         if ( authenticationInfo.isAuthenticated() )
         {
-            final HttpSession httpSession = req.getSession( true );
+            final HttpSession httpSession = httpServletRequest.getSession( true );
 
             httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
             System.out.println( "Authenticated" );

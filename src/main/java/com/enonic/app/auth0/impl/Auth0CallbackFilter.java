@@ -1,4 +1,4 @@
-package com.enonic.app.auth0;
+package com.enonic.app.auth0.impl;
 
 
 import java.io.IOException;
@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.enonic.app.auth0.Auth0ConfigurationService;
 import com.enonic.xp.web.filter.OncePerRequestFilter;
 
 @Component(immediate = true, service = Filter.class,
@@ -41,11 +42,10 @@ public class Auth0CallbackFilter
         }
 
         //If there is a page callback
-        final String callback = req.getParameter( "_callback" );
+        final String callback = req.getParameter( "state" );
         if ( callback != null )
         {
-            res.setStatus( 303 );
-            res.setHeader( "Location", callback );
+            res.sendRedirect( callback );
             return;
         }
 
@@ -60,12 +60,14 @@ public class Auth0CallbackFilter
         final String callbackCode = httpServletRequest.getParameter( "code" );
         if ( callbackCode != null )
         {
+            final String path = httpServletRequest.getParameter( "state" );
+
             //Retrieves the token
             final String tokenRequestResult = new HttpRequest().
-                setUrl( configurationService.getAppDomain() + "/oauth/token" ).
-                addParam( "client_id", configurationService.getAppClientId() ).
+                setUrl( configurationService.getAppDomain( path ) + "/oauth/token" ).
+                addParam( "client_id", configurationService.getAppClientId( path ) ).
                 addParam( "redirect_uri", httpServletRequest.getRequestURL().toString() ).
-                addParam( "client_secret", configurationService.getAppSecret() ).
+                addParam( "client_secret", configurationService.getAppSecret( path ) ).
                 addParam( "code", callbackCode ).
                 addParam( "grant_type", "authorization_code" ).
                 addParam( "scope", "openid nickname email" ).
