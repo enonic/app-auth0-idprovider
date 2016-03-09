@@ -64,7 +64,7 @@ public class Auth0CallbackFilter
 
             //Retrieves the token
             final String tokenRequestResult = new HttpRequest().
-                setUrl( configurationService.getAppDomain( path ) + "/oauth/token" ).
+                setUrl( "https://" + configurationService.getAppDomain( path ) + "/oauth/token" ).
                 addParam( "client_id", configurationService.getAppClientId( path ) ).
                 addParam( "redirect_uri", httpServletRequest.getRequestURL().toString() ).
                 addParam( "client_secret", configurationService.getAppSecret( path ) ).
