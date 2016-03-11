@@ -26,9 +26,12 @@
         </input>
       </items>
     </item-set>
-    <input name="defaultRoles" type="TextLine">
+    <input name="defaultRoles" type="PrincipalSelector">
       <label>New user role</label>
       <occurrences minimum="1" maximum="0"/>
+      <config>
+        <principalType>ROLE</principalType>
+      </config>
     </input>
   </config>
 </auth>

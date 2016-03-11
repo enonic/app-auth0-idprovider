@@ -55,7 +55,7 @@ public class Auth0ConfigurationServiceImpl
         final ImmutableSet.Builder<PrincipalKey> principalKeySet = ImmutableSet.builder();
         for ( String propertyValue : getStringProperties( path, "defaultRoles" ) )
         {
-            principalKeySet.add( PrincipalKey.ofRole( propertyValue ) );
+            principalKeySet.add( PrincipalKey.from( propertyValue ) );
         }
         return PrincipalKeys.from( principalKeySet.build() );
     }
