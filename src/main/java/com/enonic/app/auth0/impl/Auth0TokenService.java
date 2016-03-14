@@ -30,12 +30,14 @@ import com.enonic.xp.security.SecurityService;
 import com.enonic.xp.security.User;
 import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.security.auth.AuthenticationInfo;
-import com.enonic.xp.security.auth.VerifiedEmailAuthToken;
+import com.enonic.xp.security.auth.VerifiedUsernameAuthToken;
 
 @Component(service = Auth0TokenService.class)
 public class Auth0TokenService
 {
-    private static final String NICKNAME_KEY = "nickname";
+    private static final String ID_KEY = "_id";
+
+    private static final String NAME_KEY = "name";
 
     private static final String EMAIL_KEY = "email";
 
@@ -53,22 +55,20 @@ public class Auth0TokenService
 
         //Verifies the token and retrieve the email address
         Map<String, Object> decoded = jwtVerifier.verify( token );
-        final Object nickname = decoded.get( NICKNAME_KEY );
+        final Object id = decoded.get( ID_KEY );
+        final Object name = decoded.get( NAME_KEY );
         final Object email = decoded.get( EMAIL_KEY );
 
-        //Login the user linked to this email address
-        if ( nickname instanceof String && email instanceof String )
-        {
-            login( httpServletRequest, (String) nickname, (String) email );
-        }
+        //Login the user
+        login( httpServletRequest, (String) id, (String) name, (String) email );
     }
 
-    private void login( final HttpServletRequest httpServletRequest, String userId, String email )
+    private void login( final HttpServletRequest httpServletRequest, String login, String displayName, String email )
     {
         final String path = httpServletRequest.getParameter( "state" );
         final String userStoreId = configurationService.getUserStore( path );
         final UserStoreKey userStoreKey = UserStoreKey.from( userStoreId );
-        final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, userId );
+        final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, login );
 
         //Retrieves the user
         final Optional<User> user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED );
@@ -79,8 +79,8 @@ public class Auth0TokenService
             //Creates the user
             final PrincipalKeys defaultRoles = configurationService.getDefaultRoles( path );
             final CreateUserParams createUserParams = CreateUserParams.create().
-                login( userId ).
-                displayName( userId ).
+                login( login ).
+                displayName( displayName ).
                 email( email ).
                 userKey( principalKey ).
                 build();
@@ -96,18 +96,16 @@ public class Auth0TokenService
         }
 
         //Authenticates the user
-        final VerifiedEmailAuthToken verifiedUsernameAuthToken = new VerifiedEmailAuthToken();
+        final VerifiedUsernameAuthToken verifiedUsernameAuthToken = new VerifiedUsernameAuthToken();
         verifiedUsernameAuthToken.setUserStore( userStoreKey );
-        verifiedUsernameAuthToken.setEmail( email );
-        verifiedUsernameAuthToken.setRememberMe( false );
+        verifiedUsernameAuthToken.setUsername( login );
+        verifiedUsernameAuthToken.setRememberMe( true );
         final AuthenticationInfo authenticationInfo =
             runAs( () -> securityService.authenticate( verifiedUsernameAuthToken ), RoleKeys.AUTHENTICATED );
         if ( authenticationInfo.isAuthenticated() )
         {
             final HttpSession httpSession = httpServletRequest.getSession( true );
-
             httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
-            System.out.println( "Authenticated" );
         }
     }
 
