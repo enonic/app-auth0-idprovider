@@ -119,13 +119,11 @@ public class Auth0TokenService
     public void setSecurityService( final SecurityService securityService )
     {
         this.securityService = securityService;
-        System.out.println( "test1" );
     }
 
     @Reference
     public void setAuth0ConfigurationService( final Auth0ConfigurationService configurationService )
     {
         this.configurationService = configurationService;
-        System.out.println( "test2" );
     }
 }

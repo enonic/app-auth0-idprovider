@@ -2,36 +2,38 @@
 <auth>
   <config>
     <input name="userStore" type="UserStoreSelector">
-      <label>Userstore</label>
+      <label>User Store</label>
       <occurrences minimum="1" maximum="1"/>
       <config>
         <relationship-type>system:reference</relationship-type>
       </config>
     </input>
-    <item-set name="app">
-      <label>Application</label>
+    <input name="appDomain" type="TextLine">
+      <label>Application Domain</label>
       <occurrences minimum="1" maximum="1"/>
-      <items>
-        <input name="domain" type="TextLine">
-          <label>Domain</label>
-          <occurrences minimum="1" maximum="1"/>
-        </input>
-        <input name="clientId" type="TextLine">
-          <label>Client ID</label>
-          <occurrences minimum="1" maximum="1"/>
-        </input>
-        <input name="secret" type="TextLine">
-          <label>App secret</label>
-          <occurrences minimum="1" maximum="1"/>
-        </input>
-      </items>
-    </item-set>
+    </input>
+    <input name="appClientId" type="TextLine">
+      <label>Application Client ID</label>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input name="appSecret" type="TextLine">
+      <label>Application secret</label>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
     <input name="defaultRoles" type="PrincipalSelector">
       <label>New user role</label>
       <occurrences minimum="1" maximum="0"/>
       <config>
         <principalType>ROLE</principalType>
       </config>
+    </input>
+    <input name="connections" type="TextLine">
+      <label>Connections</label>
+      <occurrences minimum="0" maximum="0"/>
+    </input>
+    <input name="scopes" type="TextLine">
+      <label>Scopes</label>
+      <occurrences minimum="0" maximum="0"/>
     </input>
   </config>
 </auth>

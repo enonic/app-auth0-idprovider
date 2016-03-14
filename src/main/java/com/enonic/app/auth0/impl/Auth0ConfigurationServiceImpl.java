@@ -28,19 +28,19 @@ public class Auth0ConfigurationServiceImpl
     @Override
     public String getAppDomain( final String path )
     {
-        return getStringProperty( path, "app.domain" );
+        return getStringProperty( path, "appDomain" );
     }
 
     @Override
     public String getAppClientId( final String path )
     {
-        return getStringProperty( path, "app.clientId" );
+        return getStringProperty( path, "appClientId" );
     }
 
     @Override
     public String getAppSecret( final String path )
     {
-        return getStringProperty( path, "app.secret" );
+        return getStringProperty( path, "appSecret" );
     }
 
     @Override

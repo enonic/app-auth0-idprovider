@@ -6,14 +6,14 @@
     <script src="//cdn.auth0.com/js/lock-8.2.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <script>
-        var lock = new Auth0Lock('{{authConfig.app.clientId}}', '{{authConfig.app.domain}}');
+        var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}');
         function showLock() {
             lock.show({
                 callbackURL: '{{callbackUrl}}',
-                connections: ['Username-Password-Authentication', 'github'],
+
                 authParams: {
                     state: '{{currentPath}}',
-                    scope: 'openid _id name email'
+                    scope: 'openid _id name email {{#scopes}} {{.}}{{/scopes}}'
                 }
             });
         }
