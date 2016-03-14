@@ -15,6 +15,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import com.enonic.app.auth0.Auth0ConfigurationService;
 import com.enonic.xp.web.filter.OncePerRequestFilter;
+import com.enonic.xp.web.servlet.ServletRequestUrlHelper;
 
 @Component(immediate = true, service = Filter.class,
     property = {"osgi.http.whiteboard.filter.pattern=/auth0", "service.ranking:Integer=49",
@@ -45,7 +46,7 @@ public class Auth0CallbackFilter
         final String callback = req.getParameter( "state" );
         if ( callback != null )
         {
-            res.sendRedirect( callback );
+            res.sendRedirect( ServletRequestUrlHelper.createUri( callback ) );
             return;
         }
 

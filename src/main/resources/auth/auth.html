@@ -9,11 +9,11 @@
         var lock = new Auth0Lock('{{authConfig.app.clientId}}', '{{authConfig.app.domain}}');
         function showLock() {
             lock.show({
-                callbackURL: 'http://localhost:8080/auth0',
-                connections: ['Username-Password-Authentication'],
+                callbackURL: '{{callbackUrl}}',
+                connections: ['Username-Password-Authentication', 'github'],
                 authParams: {
                     state: '{{currentPath}}',
-                    scope: 'openid nickname email'
+                    scope: 'openid profile'
                 }
             });
         }
