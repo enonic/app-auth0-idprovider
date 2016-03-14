@@ -5,7 +5,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,10 +70,10 @@ public class Auth0TokenService
         final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, login );
 
         //Retrieves the user
-        final Optional<User> user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED );
+        User user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED ).orElse( null );
 
         //If the user does not exist
-        if ( !user.isPresent() )
+        if ( user == null )
         {
             //Creates the user
             final PrincipalKeys defaultRoles = configurationService.getDefaultRoles( path );
@@ -84,28 +83,30 @@ public class Auth0TokenService
                 email( email ).
                 userKey( principalKey ).
                 build();
-            runAs( () -> {
-                securityService.createUser( createUserParams );
+            user = runAs( () -> {
+                final User createdUser = securityService.createUser( createUserParams );
                 for ( PrincipalKey defaultRole : defaultRoles )
                 {
                     securityService.addRelationship( PrincipalRelationship.from( defaultRole ).to( principalKey ) );
                 }
-                return null;
+                return createdUser;
             }, RoleKeys.ADMIN );
-
         }
 
-        //Authenticates the user
-        final VerifiedUsernameAuthToken verifiedUsernameAuthToken = new VerifiedUsernameAuthToken();
-        verifiedUsernameAuthToken.setUserStore( userStoreKey );
-        verifiedUsernameAuthToken.setUsername( login );
-        verifiedUsernameAuthToken.setRememberMe( true );
-        final AuthenticationInfo authenticationInfo =
-            runAs( () -> securityService.authenticate( verifiedUsernameAuthToken ), RoleKeys.AUTHENTICATED );
-        if ( authenticationInfo.isAuthenticated() )
+        if ( user != null )
         {
-            final HttpSession httpSession = httpServletRequest.getSession( true );
-            httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
+            //Authenticates the user
+            final VerifiedUsernameAuthToken verifiedUsernameAuthToken = new VerifiedUsernameAuthToken();
+            verifiedUsernameAuthToken.setUserStore( userStoreKey );
+            verifiedUsernameAuthToken.setUsername( login );
+            verifiedUsernameAuthToken.setRememberMe( true );
+            final AuthenticationInfo authenticationInfo =
+                runAs( () -> securityService.authenticate( verifiedUsernameAuthToken ), RoleKeys.AUTHENTICATED );
+            if ( authenticationInfo.isAuthenticated() )
+            {
+                final HttpSession httpSession = httpServletRequest.getSession( true );
+                httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
+            }
         }
     }
 

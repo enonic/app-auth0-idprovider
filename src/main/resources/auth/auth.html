@@ -13,7 +13,7 @@
 
                 authParams: {
                     state: '{{currentPath}}',
-                    scope: 'openid _id name email {{#scopes}} {{.}}{{/scopes}}'
+                    scope: 'openid _id name email{{#scopes}} {{.}}{{/scopes}}'
                 }
             });
         }
