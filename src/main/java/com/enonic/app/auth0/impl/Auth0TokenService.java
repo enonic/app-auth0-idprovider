@@ -16,10 +16,12 @@ import org.osgi.service.component.annotations.Reference;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
 import com.auth0.jwt.internal.org.apache.commons.codec.binary.Base64;
+import com.google.common.collect.ImmutableSet;
 
 import com.enonic.app.auth0.Auth0ConfigurationService;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
+import com.enonic.xp.data.PropertyTree;
 import com.enonic.xp.security.CreateUserParams;
 import com.enonic.xp.security.PrincipalKey;
 import com.enonic.xp.security.PrincipalKeys;
@@ -40,6 +42,8 @@ public class Auth0TokenService
 
     private static final String EMAIL_KEY = "email";
 
+    private static final ImmutableSet<String> TOKEN_RESERVED_KEYS = ImmutableSet.of( "iss", "sub", "aud", "exp", "iat" );
+
     private SecurityService securityService;
 
     private Auth0ConfigurationService configurationService;
@@ -53,17 +57,18 @@ public class Auth0TokenService
         final JWTVerifier jwtVerifier = new JWTVerifier( secretDecoded, configurationService.getAppClientId( path ) );
 
         //Verifies the token and retrieve the email address
-        Map<String, Object> decoded = jwtVerifier.verify( token );
-        final Object id = decoded.get( ID_KEY );
-        final Object name = decoded.get( NAME_KEY );
-        final Object email = decoded.get( EMAIL_KEY );
+        Map<String, Object> decodedToken = jwtVerifier.verify( token );
 
         //Login the user
-        login( httpServletRequest, (String) id, (String) name, (String) email );
+        login( httpServletRequest, decodedToken );
     }
 
-    private void login( final HttpServletRequest httpServletRequest, String login, String displayName, String email )
+    private void login( final HttpServletRequest httpServletRequest, final Map<String, Object> decodedToken )
     {
+        final String login = (String) decodedToken.get( ID_KEY );
+        final String displayName = (String) decodedToken.get( NAME_KEY );
+        final String email = (String) decodedToken.get( EMAIL_KEY );
+
         final String path = httpServletRequest.getParameter( "state" );
         final String userStoreId = configurationService.getUserStore( path );
         final UserStoreKey userStoreKey = UserStoreKey.from( userStoreId );
@@ -77,12 +82,15 @@ public class Auth0TokenService
         {
             //Creates the user
             final PrincipalKeys defaultRoles = configurationService.getDefaultRoles( path );
+            final PropertyTree profile = createProfile( decodedToken );
             final CreateUserParams createUserParams = CreateUserParams.create().
                 login( login ).
                 displayName( displayName ).
                 email( email ).
                 userKey( principalKey ).
+                profile( profile ).
                 build();
+
             user = runAs( () -> {
                 final User createdUser = securityService.createUser( createUserParams );
                 for ( PrincipalKey defaultRole : defaultRoles )
@@ -108,6 +116,35 @@ public class Auth0TokenService
                 httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
             }
         }
+    }
+
+    private PropertyTree createProfile( final Map<String, Object> decodedToken )
+    {
+        final PropertyTree profile = new PropertyTree();
+        decodedToken.entrySet().
+            stream().
+            filter( profileEntry -> !TOKEN_RESERVED_KEYS.contains( profileEntry.getKey() ) ).
+            forEach( profileEntry -> {
+                final Object profileEntryValue = profileEntry.getValue();
+                final String profileEntryKey = profileEntry.getKey();
+                if ( profileEntryValue instanceof Boolean )
+                {
+                    profile.addBoolean( profileEntryKey, (Boolean) profileEntryValue );
+                }
+                else if ( profileEntryValue instanceof Integer || profileEntryValue instanceof Long )
+                {
+                    profile.addLong( profileEntryKey, ( (Number) profileEntryValue ).longValue() );
+                }
+                else if ( profileEntryValue instanceof Float || profileEntryValue instanceof Double )
+                {
+                    profile.addDouble( profileEntryKey, ( (Number) profileEntryValue ).doubleValue() );
+                }
+                else if ( profileEntryValue instanceof String )
+                {
+                    profile.addString( profileEntryKey, profileEntryValue.toString() );
+                }
+            } );
+        return profile;
     }
 
     private <T> T runAs( Callable<T> runnable, PrincipalKey principalKey )
