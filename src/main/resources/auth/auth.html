@@ -10,10 +10,9 @@
         function showLock() {
             lock.show({
                 callbackURL: '{{callbackUrl}}',
-
                 authParams: {
                     state: '{{currentPath}}',
-                    scope: 'openid _id name email{{#scopes}} {{.}}{{/scopes}}'
+                    scope: 'openid _id name email'
                 }
             });
         }

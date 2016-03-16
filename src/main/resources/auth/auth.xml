@@ -27,13 +27,5 @@
         <principalType>ROLE</principalType>
       </config>
     </input>
-    <input name="connections" type="TextLine">
-      <label>Connections</label>
-      <occurrences minimum="0" maximum="0"/>
-    </input>
-    <input name="scopes" type="TextLine">
-      <label>Scopes</label>
-      <occurrences minimum="0" maximum="0"/>
-    </input>
   </config>
 </auth>

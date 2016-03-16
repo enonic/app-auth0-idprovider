@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableSet;
 import com.enonic.app.auth0.Auth0ConfigurationService;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
-import com.enonic.xp.data.PropertyTree;
 import com.enonic.xp.security.CreateUserParams;
 import com.enonic.xp.security.PrincipalKey;
 import com.enonic.xp.security.PrincipalKeys;
@@ -82,13 +81,11 @@ public class Auth0TokenService
         {
             //Creates the user
             final PrincipalKeys defaultRoles = configurationService.getDefaultRoles( path );
-            final PropertyTree profile = createProfile( decodedToken );
             final CreateUserParams createUserParams = CreateUserParams.create().
                 login( login ).
                 displayName( displayName ).
                 email( email ).
                 userKey( principalKey ).
-                profile( profile ).
                 build();
 
             user = runAs( () -> {
@@ -116,35 +113,6 @@ public class Auth0TokenService
                 httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
             }
         }
-    }
-
-    private PropertyTree createProfile( final Map<String, Object> decodedToken )
-    {
-        final PropertyTree profile = new PropertyTree();
-        decodedToken.entrySet().
-            stream().
-            filter( profileEntry -> !TOKEN_RESERVED_KEYS.contains( profileEntry.getKey() ) ).
-            forEach( profileEntry -> {
-                final Object profileEntryValue = profileEntry.getValue();
-                final String profileEntryKey = profileEntry.getKey();
-                if ( profileEntryValue instanceof Boolean )
-                {
-                    profile.addBoolean( profileEntryKey, (Boolean) profileEntryValue );
-                }
-                else if ( profileEntryValue instanceof Integer || profileEntryValue instanceof Long )
-                {
-                    profile.addLong( profileEntryKey, ( (Number) profileEntryValue ).longValue() );
-                }
-                else if ( profileEntryValue instanceof Float || profileEntryValue instanceof Double )
-                {
-                    profile.addDouble( profileEntryKey, ( (Number) profileEntryValue ).doubleValue() );
-                }
-                else if ( profileEntryValue instanceof String )
-                {
-                    profile.addString( profileEntryKey, profileEntryValue.toString() );
-                }
-            } );
-        return profile;
     }
 
     private <T> T runAs( Callable<T> runnable, PrincipalKey principalKey )
