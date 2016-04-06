@@ -69,8 +69,7 @@ public class Auth0TokenService
         final String email = (String) decodedToken.get( EMAIL_KEY );
 
         final String path = httpServletRequest.getParameter( "state" );
-        final String userStoreId = configurationService.getUserStore( path );
-        final UserStoreKey userStoreKey = UserStoreKey.from( userStoreId );
+        final UserStoreKey userStoreKey = configurationService.getUserStoreKey( path );
         final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, login );
 
         //Retrieves the user

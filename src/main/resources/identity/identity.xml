@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<auth>
+<identity xmlns="urn:enonic:xp:model:1.0">
+  <mode>MIXED</mode>
   <config>
-    <input name="userStore" type="UserStoreSelector">
-      <label>User Store</label>
-      <occurrences minimum="1" maximum="1"/>
-      <config>
-        <relationship-type>system:reference</relationship-type>
-      </config>
-    </input>
     <input name="appDomain" type="TextLine">
       <label>Application Domain</label>
       <occurrences minimum="1" maximum="1"/>
@@ -21,11 +15,11 @@
       <occurrences minimum="1" maximum="1"/>
     </input>
     <input name="defaultRoles" type="PrincipalSelector">
-      <label>New user role</label>
+      <label>User group</label>
       <occurrences minimum="1" maximum="0"/>
       <config>
-        <principalType>ROLE</principalType>
+        <principalType>GROUP</principalType>
       </config>
     </input>
   </config>
-</auth>
+</identity>

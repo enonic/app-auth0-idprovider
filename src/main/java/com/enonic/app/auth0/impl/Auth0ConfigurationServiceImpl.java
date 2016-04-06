@@ -1,6 +1,7 @@
 package com.enonic.app.auth0.impl;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -8,6 +9,8 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.common.collect.ImmutableSet;
 
 import com.enonic.app.auth0.Auth0ConfigurationService;
+import com.enonic.xp.context.Context;
+import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.data.PropertyTree;
 import com.enonic.xp.security.AuthConfig;
@@ -17,6 +20,8 @@ import com.enonic.xp.security.PrincipalKeys;
 import com.enonic.xp.security.RoleKeys;
 import com.enonic.xp.security.SecurityService;
 import com.enonic.xp.security.User;
+import com.enonic.xp.security.UserStore;
+import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.security.auth.AuthenticationInfo;
 
 @Component
@@ -44,9 +49,9 @@ public class Auth0ConfigurationServiceImpl
     }
 
     @Override
-    public String getUserStore( final String path )
+    public UserStoreKey getUserStoreKey( final String path )
     {
-        return getStringProperty( path, "userStore" );
+        return retrieveUserStoreKey( path );
     }
 
     @Override
@@ -62,37 +67,42 @@ public class Auth0ConfigurationServiceImpl
 
     private String getStringProperty( final String path, final String propertyPath )
     {
-        final PropertyTree propertyTree = getConfig( path );
+        final PropertyTree propertyTree = retrieveConfig( path );
         return propertyTree == null ? null : propertyTree.getString( propertyPath );
     }
 
     private Iterable<String> getStringProperties( final String path, final String propertyPath )
     {
-        final PropertyTree propertyTree = getConfig( path );
+        final PropertyTree propertyTree = retrieveConfig( path );
         return propertyTree == null ? null : propertyTree.getStrings( propertyPath );
     }
 
 
-    private PropertyTree getConfig( final String path )
+    private PropertyTree retrieveConfig( final String path )
     {
-        final AuthenticationInfo authInfo = AuthenticationInfo.create().
+        final UserStoreKey userStoreKey = retrieveUserStoreKey( path );
+        final UserStore userStore = userStoreKey == null ? null : runWithAdminRole( () -> securityService.getUserStore( userStoreKey ) );
+        final AuthConfig authConfig = userStore == null ? null : userStore.getAuthConfig();
+        return authConfig == null ? null : authConfig.getConfig();
+    }
+
+    private UserStoreKey retrieveUserStoreKey( final String path )
+    {
+        final Optional<PathGuard> pathGuard = runWithAdminRole( () -> securityService.getPathGuardByPath( path ) );
+        return pathGuard.isPresent() ? pathGuard.get().getUserStoreKey() : null;
+    }
+
+    private <T> T runWithAdminRole( final Callable<T> callable )
+    {
+        final Context context = ContextAccessor.current();
+        final AuthenticationInfo authenticationInfo = AuthenticationInfo.create().
             user( User.ANONYMOUS ).
             principals( RoleKeys.ADMIN ).
             build();
-        final Optional<PathGuard> pathGuard = ContextBuilder.create().
-            authInfo( authInfo ).
+        return ContextBuilder.from( context ).
+            authInfo( authenticationInfo ).
             build().
-            callWith( () -> securityService.getPathGuardByPath( path ) );
-
-        if ( pathGuard.isPresent() )
-        {
-            final AuthConfig authConfig = pathGuard.get().getAuthConfig();
-            if ( authConfig != null )
-            {
-                return authConfig.getConfig();
-            }
-        }
-        return null;
+            callWith( callable );
     }
 
     @Reference
