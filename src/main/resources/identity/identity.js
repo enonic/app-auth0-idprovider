@@ -22,9 +22,10 @@ exports.login = function (req) {
 exports.logout = function (req) {
     authLib.logout();
 
+    var authConfig = authLib.getIdProviderConfig();
     if (req.params.redirect) {
         return {
-            redirect: req.params.redirect
+            redirect: "https://" + authConfig.appDomain + "/v2/logout" + (req.params.redirect ? ("?returnTo=" + req.params.redirect) : "")
         }
     }
 }
