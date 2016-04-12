@@ -1,4 +1,4 @@
-package com.enonic.app.auth0;
+package com.enonic.app.auth0.impl;
 
 import java.io.IOException;
 import java.util.HashMap;

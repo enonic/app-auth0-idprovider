@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<identity xmlns="urn:enonic:xp:model:1.0">
+  <mode>MIXED</mode>
+  <config>
+    <input name="appDomain" type="TextLine">
+      <label>Application Domain</label>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input name="appClientId" type="TextLine">
+      <label>Application Client ID</label>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input name="appSecret" type="TextLine">
+      <label>Application secret</label>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
+    <input name="defaultRoles" type="PrincipalSelector">
+      <label>User group</label>
+      <occurrences minimum="1" maximum="0"/>
+      <config>
+        <principalType>GROUP</principalType>
+      </config>
+    </input>
+  </config>
+</identity>
