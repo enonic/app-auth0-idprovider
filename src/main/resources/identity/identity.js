@@ -1,13 +1,10 @@
+var authLib = require('/lib/xp/auth');
 var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
-var authLib = require('/lib/xp/auth');
 
-exports.handle403 = function (req) {
-    log.info("test1");
+exports.login = function (req) {
     var authConfig = authLib.getIdProviderConfig();
-    log.info("test2");
     var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
-    log.info("test3");
     var view = resolve('identity.html');
     var params = {
         authConfig: authConfig,
@@ -21,3 +18,13 @@ exports.handle403 = function (req) {
         body: body
     };
 };
+
+exports.logout = function (req) {
+    authLib.logout();
+
+    if (req.params.redirect) {
+        return {
+            redirect: req.params.redirect
+        }
+    }
+}
