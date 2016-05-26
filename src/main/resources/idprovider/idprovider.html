@@ -11,7 +11,7 @@
             lock.show({
                 callbackURL: '{{callbackUrl}}',
                 authParams: {
-                    state: '{{currentPath}}',
+                    state: '{{userStoreKey}}{{currentPath}}',
                     scope: 'openid _id name email'
                 }
             });
