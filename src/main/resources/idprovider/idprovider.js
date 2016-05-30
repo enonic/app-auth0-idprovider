@@ -3,8 +3,6 @@ var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
 
 exports.login = function (req) {
-    log.info("req:%s", JSON.stringify(req, null, 2));
-
     var requestUrlRetriever = __.newBean('com.enonic.app.auth0.impl.RequestUrlRetriever');
     var currentUrl = __.toNativeObject(requestUrlRetriever.execute());
 
@@ -26,16 +24,16 @@ exports.login = function (req) {
     };
 };
 
-exports.authFilter = function (req) {
-    // Invoked only when user is missing
-    // Probably only implemented if SSO in front of XP. Ala getRemoteUser
-    //req.headers["Basic"];
-    log.info("authFilter:" + JSON.stringify(req, null, 2));
-};
-
-exports.synch = function (req) {
-    log.info("synch:" + JSON.stringify(req, null, 2));
-}
+//exports.authFilter = function (req) {
+//    // Invoked only when user is missing
+//    // Probably only implemented if SSO in front of XP. Ala getRemoteUser
+//    //req.headers["Basic"];
+//    log.info("authFilter:" + JSON.stringify(req, null, 2));
+//};
+//
+//exports.synch = function (req) {
+//    log.info("synch:" + JSON.stringify(req, null, 2));
+//}
 
 
 exports.logout = function (req) {
