@@ -119,10 +119,10 @@ public class Auth0TokenService
         return UserStoreKey.from( state.substring( 0, state.indexOf( '/' ) ) );
     }
 
-    public String getCallbackPath( final HttpServletRequest httpServletRequest )
+    public String getCallbackUrl( final HttpServletRequest httpServletRequest )
     {
         final String state = httpServletRequest.getParameter( "state" );
-        return state.substring( state.indexOf( '/' ) );
+        return state.substring( state.indexOf( '/' ) + 1 );
     }
 
     private <T> T runAs( Callable<T> runnable, PrincipalKey principalKey )

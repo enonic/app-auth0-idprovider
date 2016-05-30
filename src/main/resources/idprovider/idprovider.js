@@ -3,13 +3,18 @@ var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
 
 exports.login = function (req) {
+    log.info("req:%s", JSON.stringify(req, null, 2));
+
+    var requestUrlRetriever = __.newBean('com.enonic.app.auth0.impl.RequestUrlRetriever');
+    var currentUrl = __.toNativeObject(requestUrlRetriever.execute());
+
     var authConfig = authLib.getIdProviderConfig();
     var userStoreKey = authLib.getUserStore().key;
     var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
     var view = resolve('idprovider.html');
     var params = {
         authConfig: authConfig,
-        currentPath: req.path,
+        currentUrl: currentUrl,
         userStoreKey: userStoreKey,
         callbackUrl: callbackUrl
     };
@@ -36,10 +41,17 @@ exports.synch = function (req) {
 exports.logout = function (req) {
     authLib.logout();
 
-    var authConfig = authLib.getIdProviderConfig();
     if (req.params.redirect) {
         return {
-            redirect: "https://" + authConfig.appDomain + "/v2/logout" + (req.params.redirect ? ("?returnTo=" + req.params.redirect) : "")
+            redirect: req.params.redirect
         }
     }
+
+    //var authConfig = authLib.getIdProviderConfig();
+    //if (req.params.redirect) {
+    //    return {
+    //        redirect: "https://" + authConfig.appDomain + "/v2/logout" +
+    //                  (req.params.redirect ? ("?returnTo=" + encodeURIComponent(req.params.redirect)) : "")
+    //    }
+    //}
 }
