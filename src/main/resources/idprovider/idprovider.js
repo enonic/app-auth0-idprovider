@@ -2,21 +2,18 @@ var authLib = require('/lib/xp/auth');
 var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
 
-exports.login = function (req) {
-    var requestUrlRetriever = __.newBean('com.enonic.app.auth0.impl.RequestUrlRetriever');
-    var currentUrl = __.toNativeObject(requestUrlRetriever.execute());
+exports.handle403 = function (req) {
+    var body = generateLoginPage();
 
-    var authConfig = authLib.getIdProviderConfig();
-    var userStoreKey = authLib.getUserStore().key;
-    var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
-    var view = resolve('idprovider.html');
-    var params = {
-        authConfig: authConfig,
-        currentUrl: currentUrl,
-        userStoreKey: userStoreKey,
-        callbackUrl: callbackUrl
+    return {
+        status: 403,
+        contentType: 'text/html',
+        body: body
     };
-    var body = mustacheLib.render(view, params);
+};
+
+exports.login = function (req) {
+    var body = generateLoginPage(req.params.redirect);
 
     return {
         contentType: 'text/html',
@@ -24,25 +21,11 @@ exports.login = function (req) {
     };
 };
 
-//exports.authFilter = function (req) {
-//    // Invoked only when user is missing
-//    // Probably only implemented if SSO in front of XP. Ala getRemoteUser
-//    //req.headers["Basic"];
-//    log.info("authFilter:" + JSON.stringify(req, null, 2));
-//};
-//
-//exports.synch = function (req) {
-//    log.info("synch:" + JSON.stringify(req, null, 2));
-//}
-
-
 exports.logout = function (req) {
     authLib.logout();
 
-    if (req.params.redirect) {
-        return {
-            redirect: req.params.redirect
-        }
+    return {
+        redirect: req.params.redirect
     }
 
     //var authConfig = authLib.getIdProviderConfig();
@@ -52,4 +35,27 @@ exports.logout = function (req) {
     //                  (req.params.redirect ? ("?returnTo=" + encodeURIComponent(req.params.redirect)) : "")
     //    }
     //}
+};
+
+function generateLoginPage(redirectUrl) {
+    var currentUrl = retrieveRequestUrl();
+    var authConfig = authLib.getIdProviderConfig();
+    var userStoreKey = authLib.getUserStore().key;
+    var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
+    var params = {
+        authConfig: authConfig,
+        currentUrl: currentUrl,
+        userStoreKey: userStoreKey,
+        callbackUrl: callbackUrl
+    };
+
+    var view = resolve('idprovider.html');
+    return mustacheLib.render(view, params);
+};
+
+function retrieveRequestUrl() {
+    var requestUrlRetriever = __.newBean('com.enonic.app.auth0.impl.RequestUrlRetriever');
+    return __.toNativeObject(requestUrlRetriever.execute());
 }
+
+

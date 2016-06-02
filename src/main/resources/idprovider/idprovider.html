@@ -2,9 +2,9 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
-    <script src="//cdn.auth0.com/js/lock-8.3.2.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Auth0</title>
+    <script src="//cdn.auth0.com/js/lock-8.3.2.min.js"></script>
     <script>
         var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}');
         function showLock() {
