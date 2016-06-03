@@ -3,7 +3,8 @@ var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
 
 exports.handle403 = function (req) {
-    var body = generateLoginPage();
+    var redirectUrl = retrieveRequestUrl()
+    var body = generateLoginPage(redirectUrl);
 
     return {
         status: 403,
@@ -34,7 +35,6 @@ exports.logout = function (req) {
 };
 
 function generateLoginPage(redirectUrl) {
-    var redirectUrl = redirectUrl || retrieveRequestUrl();
     var authConfig = authLib.getIdProviderConfig();
     var userStoreKey = authLib.getUserStore().key;
     var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
