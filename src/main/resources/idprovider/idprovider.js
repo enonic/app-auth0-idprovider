@@ -24,27 +24,23 @@ exports.login = function (req) {
 exports.logout = function (req) {
     authLib.logout();
 
-    return {
-        redirect: req.params.redirect
-    }
+    var authConfig = authLib.getIdProviderConfig();
 
-    //var authConfig = authLib.getIdProviderConfig();
-    //if (req.params.redirect) {
-    //    return {
-    //        redirect: "https://" + authConfig.appDomain + "/v2/logout" +
-    //                  (req.params.redirect ? ("?returnTo=" + encodeURIComponent(req.params.redirect)) : "")
-    //    }
-    //}
+    return {
+        redirect: "https://" + authConfig.appDomain + "/v2/logout" +
+                  (req.params.redirect ? ("?returnTo=" + encodeURIComponent(req.params.redirect)) : "")
+
+    }
 };
 
 function generateLoginPage(redirectUrl) {
-    var currentUrl = retrieveRequestUrl();
+    var redirectUrl = redirectUrl || retrieveRequestUrl();
     var authConfig = authLib.getIdProviderConfig();
     var userStoreKey = authLib.getUserStore().key;
     var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
     var params = {
         authConfig: authConfig,
-        currentUrl: currentUrl,
+        redirectUrl: redirectUrl,
         userStoreKey: userStoreKey,
         callbackUrl: callbackUrl
     };
