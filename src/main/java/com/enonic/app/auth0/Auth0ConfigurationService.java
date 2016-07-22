@@ -11,5 +11,5 @@ public interface Auth0ConfigurationService
 
     String getAppSecret( final UserStoreKey userStoreKey );
 
-    PrincipalKeys getDefaultGroups( final UserStoreKey userStoreKey );
+    PrincipalKeys getDefaultPrincipals( final UserStoreKey userStoreKey );
 }

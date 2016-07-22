@@ -14,11 +14,12 @@
       <label>Application secret</label>
       <occurrences minimum="1" maximum="1"/>
     </input>
-    <input name="defaultGroups" type="PrincipalSelector">
-      <label>Default groups</label>
+    <input name="defaultPrincipals" type="PrincipalSelector">
+      <label>Default groups and roles</label>
       <occurrences minimum="0" maximum="0"/>
       <config>
         <principalType>GROUP</principalType>
+        <principalType>ROLE</principalType>
       </config>
     </input>
   </config>
