@@ -14,9 +14,9 @@
       <label>Application secret</label>
       <occurrences minimum="1" maximum="1"/>
     </input>
-    <input name="defaultRoles" type="PrincipalSelector">
-      <label>User group</label>
-      <occurrences minimum="1" maximum="0"/>
+    <input name="defaultGroups" type="PrincipalSelector">
+      <label>Default groups</label>
+      <occurrences minimum="0" maximum="0"/>
       <config>
         <principalType>GROUP</principalType>
       </config>

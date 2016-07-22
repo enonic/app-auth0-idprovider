@@ -78,7 +78,7 @@ public class Auth0TokenService
         if ( user == null )
         {
             //Creates the user
-            final PrincipalKeys defaultRoles = configurationService.getDefaultRoles( userStoreKey );
+            final PrincipalKeys defaultGroups = configurationService.getDefaultGroups( userStoreKey );
             final CreateUserParams createUserParams = CreateUserParams.create().
                 login( login ).
                 displayName( displayName ).
@@ -88,7 +88,7 @@ public class Auth0TokenService
 
             user = runAs( () -> {
                 final User createdUser = securityService.createUser( createUserParams );
-                for ( PrincipalKey defaultRole : defaultRoles )
+                for ( PrincipalKey defaultRole : defaultGroups )
                 {
                     securityService.addRelationship( PrincipalRelationship.from( defaultRole ).to( principalKey ) );
                 }

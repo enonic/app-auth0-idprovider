@@ -47,10 +47,10 @@ public class Auth0ConfigurationServiceImpl
     }
 
     @Override
-    public PrincipalKeys getDefaultRoles( final UserStoreKey userStoreKey )
+    public PrincipalKeys getDefaultGroups( final UserStoreKey userStoreKey )
     {
         final ImmutableSet.Builder<PrincipalKey> principalKeySet = ImmutableSet.builder();
-        for ( String propertyValue : getStringProperties( userStoreKey, "defaultRoles" ) )
+        for ( String propertyValue : getStringProperties( userStoreKey, "defaultGroups" ) )
         {
             principalKeySet.add( PrincipalKey.from( propertyValue ) );
         }
