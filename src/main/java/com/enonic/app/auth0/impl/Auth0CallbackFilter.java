@@ -14,8 +14,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.enonic.app.auth0.Auth0ConfigurationService;
+import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.web.filter.OncePerRequestFilter;
-import com.enonic.xp.web.servlet.ServletRequestUrlHelper;
 
 @Component(immediate = true, service = Filter.class,
     property = {"osgi.http.whiteboard.filter.pattern=/auth0", "service.ranking:Integer=49",
@@ -43,10 +43,10 @@ public class Auth0CallbackFilter
         }
 
         //If there is a page callback
-        final String callback = req.getParameter( "state" );
+        final String callback = this.tokenService.getCallbackUrl( req );
         if ( callback != null )
         {
-            res.sendRedirect( ServletRequestUrlHelper.createUri( callback ) );
+            res.sendRedirect( callback );
             return;
         }
 
@@ -61,14 +61,14 @@ public class Auth0CallbackFilter
         final String callbackCode = httpServletRequest.getParameter( "code" );
         if ( callbackCode != null )
         {
-            final String path = httpServletRequest.getParameter( "state" );
 
             //Retrieves the token
+            final UserStoreKey userStoreKey = tokenService.getUserStoreKey( httpServletRequest );
             final String tokenRequestResult = new HttpRequest().
-                setUrl( "https://" + configurationService.getAppDomain( path ) + "/oauth/token" ).
-                addParam( "client_id", configurationService.getAppClientId( path ) ).
+                setUrl( "https://" + configurationService.getAppDomain( userStoreKey ) + "/oauth/token" ).
+                addParam( "client_id", configurationService.getAppClientId( userStoreKey ) ).
                 addParam( "redirect_uri", httpServletRequest.getRequestURL().toString() ).
-                addParam( "client_secret", configurationService.getAppSecret( path ) ).
+                addParam( "client_secret", configurationService.getAppSecret( userStoreKey ) ).
                 addParam( "code", callbackCode ).
                 addParam( "grant_type", "authorization_code" ).
                 addParam( "scope", "openid nickname email" ).

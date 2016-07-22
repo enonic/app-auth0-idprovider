@@ -5,13 +5,11 @@ import com.enonic.xp.security.UserStoreKey;
 
 public interface Auth0ConfigurationService
 {
-    String getAppDomain( final String path );
+    String getAppDomain( final UserStoreKey userStoreKey );
 
-    String getAppClientId( final String path );
+    String getAppClientId( final UserStoreKey userStoreKey );
 
-    String getAppSecret( final String path );
+    String getAppSecret( final UserStoreKey userStoreKey );
 
-    UserStoreKey getUserStoreKey( final String path );
-
-    PrincipalKeys getDefaultRoles( final String path );
+    PrincipalKeys getDefaultPrincipals( final UserStoreKey userStoreKey );
 }

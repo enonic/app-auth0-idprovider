@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<identity xmlns="urn:enonic:xp:model:1.0">
+<id-provider xmlns="urn:enonic:xp:model:1.0">
   <mode>MIXED</mode>
   <config>
     <input name="appDomain" type="TextLine">
@@ -14,12 +14,13 @@
       <label>Application secret</label>
       <occurrences minimum="1" maximum="1"/>
     </input>
-    <input name="defaultRoles" type="PrincipalSelector">
-      <label>User group</label>
-      <occurrences minimum="1" maximum="0"/>
+    <input name="defaultPrincipals" type="PrincipalSelector">
+      <label>Default groups and roles</label>
+      <occurrences minimum="0" maximum="0"/>
       <config>
         <principalType>GROUP</principalType>
+        <principalType>ROLE</principalType>
       </config>
     </input>
   </config>
-</identity>
+</id-provider>

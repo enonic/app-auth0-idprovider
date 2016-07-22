@@ -1,6 +1,5 @@
 package com.enonic.app.auth0.impl;
 
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import org.osgi.service.component.annotations.Component;
@@ -14,7 +13,6 @@ import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.data.PropertyTree;
 import com.enonic.xp.security.AuthConfig;
-import com.enonic.xp.security.PathGuard;
 import com.enonic.xp.security.PrincipalKey;
 import com.enonic.xp.security.PrincipalKeys;
 import com.enonic.xp.security.RoleKeys;
@@ -31,65 +29,52 @@ public class Auth0ConfigurationServiceImpl
     private SecurityService securityService;
 
     @Override
-    public String getAppDomain( final String path )
+    public String getAppDomain( final UserStoreKey userStoreKey )
     {
-        return getStringProperty( path, "appDomain" );
+        return getStringProperty( userStoreKey, "appDomain" );
     }
 
     @Override
-    public String getAppClientId( final String path )
+    public String getAppClientId( final UserStoreKey userStoreKey )
     {
-        return getStringProperty( path, "appClientId" );
+        return getStringProperty( userStoreKey, "appClientId" );
     }
 
     @Override
-    public String getAppSecret( final String path )
+    public String getAppSecret( final UserStoreKey userStoreKey )
     {
-        return getStringProperty( path, "appSecret" );
+        return getStringProperty( userStoreKey, "appSecret" );
     }
 
     @Override
-    public UserStoreKey getUserStoreKey( final String path )
-    {
-        return retrieveUserStoreKey( path );
-    }
-
-    @Override
-    public PrincipalKeys getDefaultRoles( final String path )
+    public PrincipalKeys getDefaultPrincipals( final UserStoreKey userStoreKey )
     {
         final ImmutableSet.Builder<PrincipalKey> principalKeySet = ImmutableSet.builder();
-        for ( String propertyValue : getStringProperties( path, "defaultRoles" ) )
+        for ( String propertyValue : getStringProperties( userStoreKey, "defaultPrincipals" ) )
         {
             principalKeySet.add( PrincipalKey.from( propertyValue ) );
         }
         return PrincipalKeys.from( principalKeySet.build() );
     }
 
-    private String getStringProperty( final String path, final String propertyPath )
+    private String getStringProperty( final UserStoreKey userStoreKey, final String propertyPath )
     {
-        final PropertyTree propertyTree = retrieveConfig( path );
+        final PropertyTree propertyTree = retrieveConfig( userStoreKey );
         return propertyTree == null ? null : propertyTree.getString( propertyPath );
     }
 
-    private Iterable<String> getStringProperties( final String path, final String propertyPath )
+    private Iterable<String> getStringProperties( final UserStoreKey userStoreKey, final String propertyPath )
     {
-        final PropertyTree propertyTree = retrieveConfig( path );
+        final PropertyTree propertyTree = retrieveConfig( userStoreKey );
         return propertyTree == null ? null : propertyTree.getStrings( propertyPath );
     }
 
 
-    private PropertyTree retrieveConfig( final String path )
+    private PropertyTree retrieveConfig( final UserStoreKey userStoreKey )
     {
-        final UserStoreKey userStoreKey = retrieveUserStoreKey( path );
         final UserStore userStore = userStoreKey == null ? null : runWithAdminRole( () -> securityService.getUserStore( userStoreKey ) );
         final AuthConfig authConfig = userStore == null ? null : userStore.getAuthConfig();
         return authConfig == null ? null : authConfig.getConfig();
-    }
-
-    private UserStoreKey retrieveUserStoreKey( final String path )
-    {
-        final Optional<PathGuard> pathGuard = runWithAdminRole( () -> securityService.getPathGuardByPath( path ) );
-        return pathGuard.isPresent() ? pathGuard.get().getUserStoreKey() : null;
     }
 
     private <T> T runWithAdminRole( final Callable<T> callable )

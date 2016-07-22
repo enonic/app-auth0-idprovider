@@ -51,9 +51,9 @@ public class Auth0TokenService
         throws SignatureException, NoSuchAlgorithmException, JWTVerifyException, InvalidKeyException, IOException
     {
         //Creates verifier
-        final String path = httpServletRequest.getParameter( "state" );
-        final byte[] secretDecoded = new Base64( true ).decode( configurationService.getAppSecret( path ) );
-        final JWTVerifier jwtVerifier = new JWTVerifier( secretDecoded, configurationService.getAppClientId( path ) );
+        final UserStoreKey userStoreKey = getUserStoreKey( httpServletRequest );
+        final byte[] secretDecoded = new Base64( true ).decode( configurationService.getAppSecret( userStoreKey ) );
+        final JWTVerifier jwtVerifier = new JWTVerifier( secretDecoded, configurationService.getAppClientId( userStoreKey ) );
 
         //Verifies the token and retrieve the email address
         Map<String, Object> decodedToken = jwtVerifier.verify( token );
@@ -68,8 +68,7 @@ public class Auth0TokenService
         final String displayName = (String) decodedToken.get( NAME_KEY );
         final String email = (String) decodedToken.get( EMAIL_KEY );
 
-        final String path = httpServletRequest.getParameter( "state" );
-        final UserStoreKey userStoreKey = configurationService.getUserStoreKey( path );
+        final UserStoreKey userStoreKey = getUserStoreKey( httpServletRequest );
         final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, login );
 
         //Retrieves the user
@@ -79,7 +78,7 @@ public class Auth0TokenService
         if ( user == null )
         {
             //Creates the user
-            final PrincipalKeys defaultRoles = configurationService.getDefaultRoles( path );
+            final PrincipalKeys defaultPrincipals = configurationService.getDefaultPrincipals( userStoreKey );
             final CreateUserParams createUserParams = CreateUserParams.create().
                 login( login ).
                 displayName( displayName ).
@@ -89,9 +88,9 @@ public class Auth0TokenService
 
             user = runAs( () -> {
                 final User createdUser = securityService.createUser( createUserParams );
-                for ( PrincipalKey defaultRole : defaultRoles )
+                for ( PrincipalKey defaultPrincipal : defaultPrincipals )
                 {
-                    securityService.addRelationship( PrincipalRelationship.from( defaultRole ).to( principalKey ) );
+                    securityService.addRelationship( PrincipalRelationship.from( defaultPrincipal ).to( principalKey ) );
                 }
                 return createdUser;
             }, RoleKeys.ADMIN );
@@ -112,6 +111,18 @@ public class Auth0TokenService
                 httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
             }
         }
+    }
+
+    public UserStoreKey getUserStoreKey( final HttpServletRequest httpServletRequest )
+    {
+        final String state = httpServletRequest.getParameter( "state" );
+        return UserStoreKey.from( state.substring( 0, state.indexOf( '/' ) ) );
+    }
+
+    public String getCallbackUrl( final HttpServletRequest httpServletRequest )
+    {
+        final String state = httpServletRequest.getParameter( "state" );
+        return state.substring( state.indexOf( '/' ) + 1 );
     }
 
     private <T> T runAs( Callable<T> runnable, PrincipalKey principalKey )
