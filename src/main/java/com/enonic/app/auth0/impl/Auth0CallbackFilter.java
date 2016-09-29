@@ -5,21 +5,19 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.enonic.app.auth0.Auth0ConfigurationService;
 import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.web.filter.OncePerRequestFilter;
 
-@Component(immediate = true, service = Filter.class,
-    property = {"osgi.http.whiteboard.filter.pattern=/auth0", "service.ranking:Integer=49",
-        "osgi.http.whiteboard.filter.dispatcher=FORWARD", "osgi.http.whiteboard.filter.dispatcher=REQUEST"})
+//@Component(immediate = true, service = Filter.class,
+//    property = {"osgi.http.whiteboard.filter.pattern=/auth0", "service.ranking:Integer=49",
+//        "osgi.http.whiteboard.filter.dispatcher=FORWARD", "osgi.http.whiteboard.filter.dispatcher=REQUEST"})
 public class Auth0CallbackFilter
     extends OncePerRequestFilter
 {

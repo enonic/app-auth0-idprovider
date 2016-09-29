@@ -28,8 +28,7 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-mustache:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
-    include 'com.squareup.okhttp:okhttp:2.5.0'
-    include 'com.auth0:java-jwt:2.0.1'
+    include 'com.auth0:mvc-auth-commons:0.1.0'
 }
 
 repositories {
