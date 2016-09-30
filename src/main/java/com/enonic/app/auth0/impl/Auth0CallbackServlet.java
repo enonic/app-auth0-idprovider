@@ -16,6 +16,7 @@ import com.auth0.Auth0Client;
 import com.auth0.Auth0ClientImpl;
 import com.auth0.Auth0User;
 import com.auth0.NonceUtils;
+import com.auth0.QueryParamUtils;
 import com.auth0.SessionUtils;
 import com.auth0.Tokens;
 
@@ -41,7 +42,7 @@ public class Auth0CallbackServlet
                 final Auth0Client auth0Client = createAuth0Client( req );
                 final Tokens tokens = fetchTokens( req, auth0Client );
                 final Auth0User auth0User = auth0Client.getUserProfile( tokens );
-                store( tokens, auth0User, req );
+                store( tokens, auth0User, req ); //Replace by create/update user + login
                 NonceUtils.removeNonceFromStorage( req );
                 onSuccess( req, res );
             }
@@ -77,17 +78,18 @@ public class Auth0CallbackServlet
     protected void onSuccess( final HttpServletRequest req, final HttpServletResponse res )
         throws ServletException, IOException
     {
-        res.sendRedirect( req.getContextPath() + getCallbackUrl( req ) );
+        res.sendRedirect( req.getContextPath() + getRedirectUrl( req ) );
     }
 
     protected void onFailure( final HttpServletRequest req, final HttpServletResponse res, Exception ex )
         throws ServletException, IOException
     {
         ex.printStackTrace();
-        final String redirectOnFailLocation = req.getContextPath() + getCallbackUrl( req );
+        final String redirectOnFailLocation = req.getContextPath() + getRedirectUrl( req );
         res.sendRedirect( redirectOnFailLocation );
     }
 
+    //TODO Remove
     protected void store( final Tokens tokens, final Auth0User user, final HttpServletRequest req )
     {
         SessionUtils.setTokens( req, tokens );
@@ -113,14 +115,15 @@ public class Auth0CallbackServlet
 
     private UserStoreKey getUserStoreKey( final HttpServletRequest httpServletRequest )
     {
-        final String state = httpServletRequest.getParameter( "state" );
-        return UserStoreKey.from( state.substring( 0, state.indexOf( '/' ) ) );
+        final String stateFromRequest = httpServletRequest.getParameter( "state" );
+        final String userStoreKeyString = QueryParamUtils.parseFromQueryParams( stateFromRequest, "userstore" );
+        return UserStoreKey.from( userStoreKeyString );
     }
 
-    public String getCallbackUrl( final HttpServletRequest httpServletRequest )
+    public String getRedirectUrl( final HttpServletRequest httpServletRequest )
     {
-        final String state = httpServletRequest.getParameter( "state" );
-        return state.substring( state.indexOf( '/' ) + 1 );
+        final String stateFromRequest = httpServletRequest.getParameter( "state" );
+        return QueryParamUtils.parseFromQueryParams( stateFromRequest, "redirect" );
     }
 
     @Reference
