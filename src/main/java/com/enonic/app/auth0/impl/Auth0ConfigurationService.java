@@ -7,7 +7,6 @@ import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.ImmutableSet;
 
-import com.enonic.app.auth0.Auth0ConfigurationService;
 import com.enonic.xp.context.Context;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
@@ -22,31 +21,26 @@ import com.enonic.xp.security.UserStore;
 import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.security.auth.AuthenticationInfo;
 
-@Component
-public class Auth0ConfigurationServiceImpl
-    implements Auth0ConfigurationService
+@Component(service = Auth0ConfigurationService.class)
+public class Auth0ConfigurationService
 {
     private SecurityService securityService;
 
-    @Override
     public String getAppDomain( final UserStoreKey userStoreKey )
     {
         return getStringProperty( userStoreKey, "appDomain" );
     }
 
-    @Override
     public String getAppClientId( final UserStoreKey userStoreKey )
     {
         return getStringProperty( userStoreKey, "appClientId" );
     }
 
-    @Override
     public String getAppSecret( final UserStoreKey userStoreKey )
     {
         return getStringProperty( userStoreKey, "appSecret" );
     }
 
-    @Override
     public PrincipalKeys getDefaultPrincipals( final UserStoreKey userStoreKey )
     {
         final ImmutableSet.Builder<PrincipalKey> principalKeySet = ImmutableSet.builder();
