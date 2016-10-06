@@ -12,12 +12,14 @@ import com.auth0.Auth0User;
 
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
+import com.enonic.xp.data.PropertyTree;
 import com.enonic.xp.security.CreateUserParams;
 import com.enonic.xp.security.PrincipalKey;
 import com.enonic.xp.security.PrincipalKeys;
 import com.enonic.xp.security.PrincipalRelationship;
 import com.enonic.xp.security.RoleKeys;
 import com.enonic.xp.security.SecurityService;
+import com.enonic.xp.security.UpdateUserParams;
 import com.enonic.xp.security.User;
 import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.security.auth.AuthenticationInfo;
@@ -32,19 +34,17 @@ public class Auth0LoginService
 
     public void login( final HttpServletRequest request, final Auth0User auth0User, final UserStoreKey userStoreKey )
     {
-        final String userId = auth0User.getUserId().replace( '|', '-' );
-        final String email = auth0User.getEmail();
-        final String name = auth0User.getName();
-
-        final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, userId );
-
         //Retrieves the user
+        final String userId = auth0User.getUserId().replace( '|', '-' );
+        final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, userId );
         User user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED ).orElse( null );
 
         //If the user does not exist
         if ( user == null )
         {
             //Creates the user
+            final String email = auth0User.getEmail();
+            final String name = auth0User.getName();
             final PrincipalKeys defaultPrincipals = configurationService.getDefaultPrincipals( userStoreKey );
             final CreateUserParams createUserParams = CreateUserParams.create().
                 login( userId ).
@@ -53,8 +53,32 @@ public class Auth0LoginService
                 userKey( principalKey ).
                 build();
 
+            final UpdateUserParams updateUserParams = UpdateUserParams.create().
+                userKey( principalKey ).
+                editor( editableUser -> {
+                    final PropertyTree profile = new PropertyTree();
+                    profile.setString( "userId", auth0User.getUserId() );
+                    profile.setString( "name", auth0User.getName() );
+                    profile.setString( "nickname", auth0User.getNickname() );
+                    profile.setString( "picture", auth0User.getPicture() );
+                    profile.setString( "email", auth0User.getEmail() );
+                    profile.setBoolean( "emailVerified", auth0User.isEmailVerified() );
+                    profile.setString( "givenName", auth0User.getGivenName() );
+                    profile.setString( "familyName", auth0User.getFamilyName() );
+                    //TODO Metadata
+                    profile.setInstant( "createdAt", auth0User.getCreatedAt().toInstant() );
+                    //TODO Identities
+                    //TODO ExtraInfo
+                    //TODO Roles
+                    //TODO Groups
+
+                    editableUser.profile = profile;
+                } ).
+                build();
+
             user = runAs( () -> {
-                final User createdUser = securityService.createUser( createUserParams );
+                securityService.createUser( createUserParams );
+                final User createdUser = securityService.updateUser( updateUserParams );
                 for ( PrincipalKey defaultPrincipal : defaultPrincipals )
                 {
                     securityService.addRelationship( PrincipalRelationship.from( defaultPrincipal ).to( principalKey ) );
