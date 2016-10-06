@@ -1,5 +1,6 @@
 package com.enonic.app.auth0.impl;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,10 +10,15 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.auth0.Auth0User;
+import com.auth0.authentication.result.UserIdentity;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
+import com.enonic.xp.data.PropertySet;
 import com.enonic.xp.data.PropertyTree;
+import com.enonic.xp.lib.content.mapper.JsonToPropertyTreeTranslator;
 import com.enonic.xp.security.CreateUserParams;
 import com.enonic.xp.security.PrincipalKey;
 import com.enonic.xp.security.PrincipalKeys;
@@ -55,25 +61,7 @@ public class Auth0LoginService
 
             final UpdateUserParams updateUserParams = UpdateUserParams.create().
                 userKey( principalKey ).
-                editor( editableUser -> {
-                    final PropertyTree profile = new PropertyTree();
-                    profile.setString( "userId", auth0User.getUserId() );
-                    profile.setString( "name", auth0User.getName() );
-                    profile.setString( "nickname", auth0User.getNickname() );
-                    profile.setString( "picture", auth0User.getPicture() );
-                    profile.setString( "email", auth0User.getEmail() );
-                    profile.setBoolean( "emailVerified", auth0User.isEmailVerified() );
-                    profile.setString( "givenName", auth0User.getGivenName() );
-                    profile.setString( "familyName", auth0User.getFamilyName() );
-                    //TODO Metadata
-                    profile.setInstant( "createdAt", auth0User.getCreatedAt().toInstant() );
-                    //TODO Identities
-                    //TODO ExtraInfo
-                    //TODO Roles
-                    //TODO Groups
-
-                    editableUser.profile = profile;
-                } ).
+                editor( editableUser -> editableUser.profile = createProfile( auth0User ) ).
                 build();
 
             user = runAs( () -> {
@@ -102,6 +90,68 @@ public class Auth0LoginService
                 httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
             }
         }
+    }
+
+
+    private PropertyTree createProfile( final Auth0User auth0User )
+    {
+        final PropertyTree profile = new PropertyTree();
+        profile.setString( "userId", auth0User.getUserId() );
+        profile.setString( "name", auth0User.getName() );
+        profile.setString( "nickname", auth0User.getNickname() );
+        profile.setString( "picture", auth0User.getPicture() );
+        profile.setString( "email", auth0User.getEmail() );
+        profile.setBoolean( "emailVerified", auth0User.isEmailVerified() );
+        profile.setString( "givenName", auth0User.getGivenName() );
+        profile.setString( "familyName", auth0User.getFamilyName() );
+        profile.setSet( "userMetaData", createPropertySet( auth0User.getUserMetadata() ) );
+        profile.setSet( "appMetaData", createPropertySet( auth0User.getAppMetadata() ) );
+        profile.setInstant( "createdAt", auth0User.getCreatedAt().toInstant() );
+        for ( UserIdentity userIdentity : auth0User.getIdentities() )
+        {
+            profile.addSet( "identities", createPropertySet( userIdentity ) );
+        }
+        profile.setSet( "extraInfo", createPropertySet( auth0User.getExtraInfo() ) );
+        for ( String role : auth0User.getRoles() )
+        {
+            profile.addString( "roles", role );
+        }
+        for ( String group : auth0User.getGroups() )
+        {
+            profile.addString( "groups", group );
+        }
+        return profile;
+    }
+
+    private PropertySet createPropertySet( final UserIdentity userIdentity )
+    {
+        final PropertySet propertySet = new PropertySet();
+        propertySet.setString( "id", userIdentity.getId() );
+        propertySet.setString( "connection", userIdentity.getConnection() );
+        propertySet.setString( "provider", userIdentity.getProvider() );
+        propertySet.setBoolean( "social", userIdentity.isSocial() );
+        propertySet.setSet( "profileInfo", createPropertySet( userIdentity.getProfileInfo() ) );
+        return propertySet;
+    }
+
+    private PropertySet createPropertySet( final Map<String, Object> value )
+    {
+        if ( value == null )
+        {
+            return null;
+        }
+
+        //TODO Is there no more optimized method for Map to PropertySet?
+        final JsonNode jsonNode = createJsonNode( value );
+        return new JsonToPropertyTreeTranslator( null, false ).
+            translate( jsonNode ).
+            getRoot();
+    }
+
+    private JsonNode createJsonNode( final Map<String, Object> value )
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.valueToTree( value );
     }
 
 
