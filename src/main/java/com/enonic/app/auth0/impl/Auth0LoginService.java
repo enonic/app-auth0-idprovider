@@ -43,52 +43,66 @@ public class Auth0LoginService
         //Retrieves the user
         final String userId = auth0User.getUserId().replace( '|', '-' );
         final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, userId );
-        User user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED ).orElse( null );
+        final User user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED ).orElse( null );
 
         //If the user does not exist
         if ( user == null )
         {
             //Creates the user
-            final String email = auth0User.getEmail();
-            final String name = auth0User.getName();
-            final PrincipalKeys defaultPrincipals = configurationService.getDefaultPrincipals( userStoreKey );
-            final CreateUserParams createUserParams = CreateUserParams.create().
-                login( userId ).
-                displayName( name ).
-                email( email ).
-                userKey( principalKey ).
-                build();
-
-            final UpdateUserParams updateUserParams = UpdateUserParams.create().
-                userKey( principalKey ).
-                editor( editableUser -> editableUser.profile = createProfile( auth0User ) ).
-                build();
-
-            user = runAs( () -> {
-                securityService.createUser( createUserParams );
-                final User createdUser = securityService.updateUser( updateUserParams );
-                for ( PrincipalKey defaultPrincipal : defaultPrincipals )
-                {
-                    securityService.addRelationship( PrincipalRelationship.from( defaultPrincipal ).to( principalKey ) );
-                }
-                return createdUser;
-            }, RoleKeys.ADMIN );
+            createUser( auth0User, principalKey );
         }
 
-        if ( user != null )
-        {
-            //Authenticates the user
-            final VerifiedUsernameAuthToken verifiedUsernameAuthToken = new VerifiedUsernameAuthToken();
-            verifiedUsernameAuthToken.setUserStore( userStoreKey );
-            verifiedUsernameAuthToken.setUsername( userId );
-            verifiedUsernameAuthToken.setRememberMe( true );
-            final AuthenticationInfo authenticationInfo =
-                runAs( () -> securityService.authenticate( verifiedUsernameAuthToken ), RoleKeys.AUTHENTICATED );
-            if ( authenticationInfo.isAuthenticated() )
+        //Updates the profile
+        updateProfile( auth0User, principalKey );
+
+        //Authenticates the user
+        authenticate( request, principalKey );
+
+    }
+
+    private void createUser( final Auth0User auth0User, final PrincipalKey principalKey )
+    {
+        final String email = auth0User.getEmail();
+        final String name = auth0User.getName();
+        final PrincipalKeys defaultPrincipals = configurationService.getDefaultPrincipals( principalKey.getUserStore() );
+        final CreateUserParams createUserParams = CreateUserParams.create().
+            login( principalKey.getId() ).
+            displayName( name ).
+            email( email ).
+            userKey( principalKey ).
+            build();
+
+        runAs( () -> {
+            securityService.createUser( createUserParams );
+            for ( PrincipalKey defaultPrincipal : defaultPrincipals )
             {
-                final HttpSession httpSession = request.getSession( true );
-                httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
+                securityService.addRelationship( PrincipalRelationship.from( defaultPrincipal ).to( principalKey ) );
             }
+            return null;
+        }, RoleKeys.ADMIN );
+    }
+
+    private void updateProfile( final Auth0User auth0User, final PrincipalKey principalKey )
+    {
+        final UpdateUserParams updateUserParams = UpdateUserParams.create().
+            userKey( principalKey ).
+            editor( editableUser -> editableUser.profile = createProfile( auth0User ) ).
+            build();
+        runAs( () -> securityService.updateUser( updateUserParams ), RoleKeys.ADMIN );
+    }
+
+    private void authenticate( final HttpServletRequest request, final PrincipalKey principalKey )
+    {
+        final VerifiedUsernameAuthToken verifiedUsernameAuthToken = new VerifiedUsernameAuthToken();
+        verifiedUsernameAuthToken.setUserStore( principalKey.getUserStore() );
+        verifiedUsernameAuthToken.setUsername( principalKey.getId() );
+        verifiedUsernameAuthToken.setRememberMe( true );
+        final AuthenticationInfo authenticationInfo =
+            runAs( () -> securityService.authenticate( verifiedUsernameAuthToken ), RoleKeys.AUTHENTICATED );
+        if ( authenticationInfo.isAuthenticated() )
+        {
+            final HttpSession httpSession = request.getSession( true );
+            httpSession.setAttribute( authenticationInfo.getClass().getName(), authenticationInfo );
         }
     }
 
