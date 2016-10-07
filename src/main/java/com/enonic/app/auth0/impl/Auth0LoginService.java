@@ -61,8 +61,7 @@ public class Auth0LoginService
                 queryExpr( queryExpr ).
                 build();
             user = (User) runAs( () -> securityService.query( userQuery ), RoleKeys.AUTHENTICATED ).
-                getUsers().iterator().
-                next();
+                getUsers().first();
         }
 
         //If the user does not exist
@@ -73,10 +72,10 @@ public class Auth0LoginService
         }
 
         //Updates the profile
-        updateProfile( auth0User, principalKey );
+        updateProfile( auth0User, user.getKey() );
 
         //Authenticates the user
-        authenticate( request, principalKey );
+        authenticate( request, user.getKey() );
 
     }
 
