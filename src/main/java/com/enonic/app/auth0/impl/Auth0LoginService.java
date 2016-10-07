@@ -19,6 +19,9 @@ import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.data.PropertySet;
 import com.enonic.xp.data.PropertyTree;
 import com.enonic.xp.lib.content.mapper.JsonToPropertyTreeTranslator;
+import com.enonic.xp.query.expr.ConstraintExpr;
+import com.enonic.xp.query.expr.QueryExpr;
+import com.enonic.xp.query.parser.QueryParser;
 import com.enonic.xp.security.CreateUserParams;
 import com.enonic.xp.security.PrincipalKey;
 import com.enonic.xp.security.PrincipalKeys;
@@ -27,6 +30,7 @@ import com.enonic.xp.security.RoleKeys;
 import com.enonic.xp.security.SecurityService;
 import com.enonic.xp.security.UpdateUserParams;
 import com.enonic.xp.security.User;
+import com.enonic.xp.security.UserQuery;
 import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.security.auth.AuthenticationInfo;
 import com.enonic.xp.security.auth.VerifiedUsernameAuthToken;
@@ -40,10 +44,26 @@ public class Auth0LoginService
 
     public void login( final HttpServletRequest request, final Auth0User auth0User, final UserStoreKey userStoreKey )
     {
-        //Retrieves the user
+        //Retrieves the user by key
         final String userId = auth0User.getUserId().replace( '|', '-' );
         final PrincipalKey principalKey = PrincipalKey.ofUser( userStoreKey, userId );
-        final User user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED ).orElse( null );
+        User user = runAs( () -> securityService.getUser( principalKey ), RoleKeys.AUTHENTICATED ).orElse( null );
+
+        //If the user does not exist with this id
+        if ( user == null && auth0User.getEmail() != null )
+        {
+            //Retrieves the user by email
+            final ConstraintExpr constraintExpr =
+                QueryParser.parseCostraintExpression( "userstorekey = '" + userStoreKey + "' AND email = '" + auth0User.getEmail() + "'" );
+            final QueryExpr queryExpr = QueryExpr.from( constraintExpr );
+            final UserQuery userQuery = UserQuery.create().
+                size( 1 ).
+                queryExpr( queryExpr ).
+                build();
+            user = (User) runAs( () -> securityService.query( userQuery ), RoleKeys.AUTHENTICATED ).
+                getUsers().iterator().
+                next();
+        }
 
         //If the user does not exist
         if ( user == null )
