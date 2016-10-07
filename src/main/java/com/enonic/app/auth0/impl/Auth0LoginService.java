@@ -68,7 +68,7 @@ public class Auth0LoginService
         if ( user == null )
         {
             //Creates the user
-            createUser( auth0User, principalKey );
+            user = createUser( auth0User, principalKey );
         }
 
         //Updates the profile
@@ -79,7 +79,7 @@ public class Auth0LoginService
 
     }
 
-    private void createUser( final Auth0User auth0User, final PrincipalKey principalKey )
+    private User createUser( final Auth0User auth0User, final PrincipalKey principalKey )
     {
         final String email = auth0User.getEmail();
         final String name = auth0User.getName();
@@ -91,13 +91,13 @@ public class Auth0LoginService
             userKey( principalKey ).
             build();
 
-        runAs( () -> {
-            securityService.createUser( createUserParams );
+        return runAs( () -> {
+            final User user = securityService.createUser( createUserParams );
             for ( PrincipalKey defaultPrincipal : defaultPrincipals )
             {
                 securityService.addRelationship( PrincipalRelationship.from( defaultPrincipal ).to( principalKey ) );
             }
-            return null;
+            return user;
         }, RoleKeys.ADMIN );
     }
 
@@ -105,7 +105,7 @@ public class Auth0LoginService
     {
         final UpdateUserParams updateUserParams = UpdateUserParams.create().
             userKey( principalKey ).
-            editor( editableUser -> editableUser.profile = createProfile( auth0User ) ).
+            editor( editableUser -> this.updateProfile( editableUser.profile, auth0User ) ).
             build();
         runAs( () -> securityService.updateUser( updateUserParams ), RoleKeys.ADMIN );
     }
@@ -126,34 +126,52 @@ public class Auth0LoginService
     }
 
 
-    private PropertyTree createProfile( final Auth0User auth0User )
+    private void updateProfile( final PropertyTree profile, final Auth0User auth0User )
     {
-        final PropertyTree profile = new PropertyTree();
-        profile.setString( "userId", auth0User.getUserId() );
-        profile.setString( "name", auth0User.getName() );
-        profile.setString( "nickname", auth0User.getNickname() );
-        profile.setString( "picture", auth0User.getPicture() );
-        profile.setString( "email", auth0User.getEmail() );
-        profile.setBoolean( "emailVerified", auth0User.isEmailVerified() );
-        profile.setString( "givenName", auth0User.getGivenName() );
-        profile.setString( "familyName", auth0User.getFamilyName() );
-        profile.setSet( "userMetaData", createPropertySet( auth0User.getUserMetadata() ) );
-        profile.setSet( "appMetaData", createPropertySet( auth0User.getAppMetadata() ) );
-        profile.setInstant( "createdAt", auth0User.getCreatedAt().toInstant() );
+        //Retrieves the existing auth0 identity in the profile
+        PropertySet currentAuth0Identity = null;
+        final Iterable<PropertySet> identities = profile.getSets( "auth0Identities" );
+        for ( PropertySet identity : identities )
+        {
+            if ( auth0User.getUserId().equals( identity.getString( "userId" ) ) )
+            {
+                currentAuth0Identity = identity;
+                break;
+            }
+        }
+
+        //If there is no existing auth0 identity in the profile
+        if ( currentAuth0Identity == null )
+        {
+            //Creates the auth0 identity
+            currentAuth0Identity = profile.addSet( "auth0Identities" );
+        }
+
+        //Update the auth0 identity
+        currentAuth0Identity.setString( "userId", auth0User.getUserId() );
+        currentAuth0Identity.setString( "name", auth0User.getName() );
+        currentAuth0Identity.setString( "nickname", auth0User.getNickname() );
+        currentAuth0Identity.setString( "picture", auth0User.getPicture() );
+        currentAuth0Identity.setString( "email", auth0User.getEmail() );
+        currentAuth0Identity.setBoolean( "emailVerified", auth0User.isEmailVerified() );
+        currentAuth0Identity.setString( "givenName", auth0User.getGivenName() );
+        currentAuth0Identity.setString( "familyName", auth0User.getFamilyName() );
+        currentAuth0Identity.setSet( "userMetaData", createPropertySet( auth0User.getUserMetadata() ) );
+        currentAuth0Identity.setSet( "appMetaData", createPropertySet( auth0User.getAppMetadata() ) );
+        currentAuth0Identity.setInstant( "createdAt", auth0User.getCreatedAt().toInstant() );
         for ( UserIdentity userIdentity : auth0User.getIdentities() )
         {
-            profile.addSet( "identities", createPropertySet( userIdentity ) );
+            currentAuth0Identity.addSet( "identities", createPropertySet( userIdentity ) );
         }
-        profile.setSet( "extraInfo", createPropertySet( auth0User.getExtraInfo() ) );
+        currentAuth0Identity.setSet( "extraInfo", createPropertySet( auth0User.getExtraInfo() ) );
         for ( String role : auth0User.getRoles() )
         {
-            profile.addString( "roles", role );
+            currentAuth0Identity.addString( "roles", role );
         }
         for ( String group : auth0User.getGroups() )
         {
-            profile.addString( "groups", group );
+            currentAuth0Identity.addString( "groups", group );
         }
-        return profile;
     }
 
     private PropertySet createPropertySet( final UserIdentity userIdentity )
