@@ -14,6 +14,16 @@ exports.handle401 = function (req) {
     };
 };
 
+exports.get = function (req) {
+    var redirectUrl = generateRedirectUrl();
+    var body = generateLoginPage(redirectUrl);
+
+    return {
+        contentType: 'text/html',
+        body: body
+    };
+};
+
 exports.login = function (req) {
     var body = generateLoginPage(req.params.redirect);
 
@@ -34,6 +44,14 @@ exports.logout = function (req) {
 
     }
 };
+
+function generateRedirectUrl() {
+    var site = portalLib.getSite();
+    if (site) {
+        return portalLib.pageUrl({id: site._id});
+    }
+    return '/';
+}
 
 function generateLoginPage(redirectUrl) {
     var userStoreKey = portalLib.getUserStoreKey();
