@@ -4,23 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Auth0</title>
-    <script src="//cdn.auth0.com/js/lock-8.3.2.min.js"></script>
+    <script src="https://cdn.auth0.com/js/lock/10.2/lock.min.js"></script>
     <script>
-        var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}');
-        function showLock() {
-            lock.show({
-                callbackURL: '{{callbackUrl}}',
-                authParams: {
+        var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}', {
+            auth: {
+                redirectUrl: '{{callbackUrl}}',
+                params: {
                     state: '{{state}}',
                     scope: 'openid profile'
-                }
-            });
-        }
+                },
+                sso: true
+            }
+        });
+
     </script>
 </head>
 <body>
 <script>
-    showLock();
+    lock.show();
 </script>
 </body>
 </html>
