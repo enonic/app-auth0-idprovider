@@ -4,44 +4,49 @@ var portalLib = require('/lib/xp/portal');
 var stateLib = require('/lib/state');
 
 exports.handle401 = function (req) {
-    var redirectUrl = retrieveRequestUrl()
-    var body = generateLoginPage(redirectUrl);
+    var redirectUrl = retrieveRequestUrl();
+    return redirectToSso(redirectUrl);
+};
+
+function redirectToSso(redirectUrl) {
+    var userStoreKey = portalLib.getUserStoreKey();
+    stateLib.addNonceToState();
+
+    stateLib.addOrReplaceToState('userstore', userStoreKey);
+    var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
+    var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
+    var authConfig = authLib.getIdProviderConfig();
 
     return {
-        status: 401,
-        contentType: 'text/html',
-        body: body
+        redirect: 'https://' + authConfig.appDomain + "/authorize?" +
+                  "scope=openid%20profile" +
+                  "&response_type=code" +
+                  "&sso=true" +
+                  "&state=" + encodeURIComponent(state) +
+                  "&client_id=" + authConfig.appClientId + "" +
+                  "&redirect_uri=" + encodeURIComponent(callbackUrl)
     };
-};
+}
 
 exports.get = function (req) {
     var redirectUrl = generateRedirectUrl();
-    var body = generateLoginPage(redirectUrl);
-
-    return {
-        contentType: 'text/html',
-        body: body
-    };
+    return redirectToSso(redirectUrl);
 };
 
 exports.login = function (req) {
-    var body = generateLoginPage(req.params.redirect);
+    var redirectUrl = req.validTicket ? req.params.redirect : generateRedirectUrl();
 
-    return {
-        contentType: 'text/html',
-        body: body
-    };
+    return redirectToSso(redirectUrl);
 };
 
 exports.logout = function (req) {
     authLib.logout();
 
+    var redirectUrl = req.validTicket ? req.params.redirect : generateRedirectUrl();
     var authConfig = authLib.getIdProviderConfig();
 
     return {
-        redirect: "https://" + authConfig.appDomain + "/v2/logout" +
-                  (req.params.redirect ? ("?returnTo=" + encodeURIComponent(req.params.redirect)) : "")
-
+        redirect: "https://" + authConfig.appDomain + "/v2/logout?returnTo=" + redirectUrl
     }
 };
 
@@ -54,6 +59,8 @@ function generateRedirectUrl() {
 }
 
 function generateLoginPage(redirectUrl) {
+
+
     var userStoreKey = portalLib.getUserStoreKey();
     stateLib.addNonceToState();
 
