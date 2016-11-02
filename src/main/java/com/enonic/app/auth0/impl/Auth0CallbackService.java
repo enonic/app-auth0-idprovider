@@ -3,11 +3,7 @@ package com.enonic.app.auth0.impl;
 
 import java.io.IOException;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -23,19 +19,16 @@ import com.auth0.Tokens;
 
 import com.enonic.xp.security.UserStoreKey;
 
-@Component(immediate = true, service = Servlet.class, property = {"osgi.http.whiteboard.servlet.pattern=/auth0"})
-public class Auth0CallbackServlet
-    extends HttpServlet
+@Component(immediate = true, service = Auth0CallbackService.class)
+public class Auth0CallbackService
 {
-    private final static Logger LOG = LoggerFactory.getLogger( Auth0CallbackServlet.class );
+    private final static Logger LOG = LoggerFactory.getLogger( Auth0CallbackService.class );
 
     private Auth0LoginService loginService;
 
     private Auth0ConfigurationService configurationService;
 
-    @Override
-    protected void doGet( final HttpServletRequest request, final HttpServletResponse response )
-        throws ServletException, IOException
+    public boolean handle( final HttpServletRequest request )
     {
         if ( isValidRequest( request ) )
         {
@@ -47,17 +40,18 @@ public class Auth0CallbackServlet
                 final Auth0User auth0User = auth0Client.getUserProfile( tokens );
                 loginService.login( request, auth0User, userStoreKey );
                 NonceUtils.removeNonceFromStorage( request );
-                onSuccess( request, response );
+                return true;
             }
-            catch ( RuntimeException ex )
+            catch ( Exception e )
             {
-                onFailure( request, response, ex );
+                LOG.error( "Error while handling auth0 callback", e );
             }
         }
         else
         {
-            onFailure( request, response, new IllegalStateException( "Invalid state or error" ) );
+            LOG.error( "Error while handling auth0 callback", new IllegalStateException( "Invalid state or error" ) );
         }
+        return false;
     }
 
     private Auth0Client createAuth0Client( UserStoreKey userStoreKey )
@@ -77,22 +71,7 @@ public class Auth0CallbackServlet
         return auth0Client.getTokens( authorizationCode, redirectUri );
     }
 
-    protected void onSuccess( final HttpServletRequest req, final HttpServletResponse res )
-        throws ServletException, IOException
-    {
-
-        res.sendRedirect( getRedirectUrl( req ) );
-    }
-
-    protected void onFailure( final HttpServletRequest req, final HttpServletResponse res, Exception e )
-        throws ServletException, IOException
-    {
-        LOG.error( "Error while handling auth0 callback", e );
-        res.sendRedirect( getRedirectUrl( req ) );
-    }
-
     protected boolean isValidRequest( final HttpServletRequest req )
-        throws IOException
     {
         return !hasError( req ) && isValidState( req );
     }
@@ -113,12 +92,6 @@ public class Auth0CallbackServlet
         final String stateFromRequest = httpServletRequest.getParameter( "state" );
         final String userStoreKeyString = QueryParamUtils.parseFromQueryParams( stateFromRequest, "userstore" );
         return UserStoreKey.from( userStoreKeyString );
-    }
-
-    public String getRedirectUrl( final HttpServletRequest httpServletRequest )
-    {
-        final String stateFromRequest = httpServletRequest.getParameter( "state" );
-        return QueryParamUtils.parseFromQueryParams( stateFromRequest, "redirect" );
     }
 
     @Reference

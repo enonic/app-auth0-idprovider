@@ -1,6 +1,7 @@
 var authLib = require('/lib/xp/auth');
 var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
+var callbackLib = require('/lib/callback');
 var stateLib = require('/lib/state');
 
 exports.handle401 = function (req) {
@@ -14,7 +15,10 @@ function redirectToSso(redirectUrl) {
 
     stateLib.addOrReplaceToState('userstore', userStoreKey);
     var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
-    var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
+    var callbackUrl = portalLib.idProviderUrl({
+        userStore: userStoreKey,
+        type: 'absolute'
+    });
     var authConfig = authLib.getIdProviderConfig();
 
     return {
@@ -29,13 +33,19 @@ function redirectToSso(redirectUrl) {
 }
 
 exports.get = function (req) {
-    var redirectUrl = generateRedirectUrl();
-    return redirectToSso(redirectUrl);
+    if (req.params.state) {
+        callbackLib.handle();
+        return {
+            redirect: stateLib.getFromState('redirect')
+        }
+    } else {
+        var redirectUrl = generateRedirectUrl();
+        return redirectToSso(redirectUrl);
+    }
 };
 
 exports.login = function (req) {
     var redirectUrl = req.validTicket ? req.params.redirect : generateRedirectUrl();
-
     return redirectToSso(redirectUrl);
 };
 
