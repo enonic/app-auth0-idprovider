@@ -6,7 +6,7 @@
 2. Define your application name and select "Regular Web Applications" as client type.
 ![](img/create-client-2.png)
 
-### Step 1: Configure the client settings
+### Step 2: Configure the client settings
 1. Your application should have the client type "Regular Web Application" and the Token Endpoint Authentication Method "POST".
 ![](img/client-settings.png)
 2. Below, enable "Use Auth0 instead of the IdP to do Single Sign On"
