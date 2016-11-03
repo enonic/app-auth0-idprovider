@@ -4,8 +4,8 @@ This app contains an ID Provider using Auth0 single sign-on services.
 
 ## Usage
 
-### Step 1: If you do not have one,[Create an account on https://auth0.com/](docs/account/account.md)
-### Step 2: Create an Auth0 client
+### Step 1: If you do not have one, [create an account on https://auth0.com/](docs/account/account.md)
+### Step 2: [Create and configure an Auth0 client](docs/client/client.md)
 TODO (+ Add rule "Force email verification")
 ### Step 3: Install the application
 1. In the admin tool "Applications" of your Enonic XP installation, click on "Install". 

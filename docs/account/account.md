@@ -4,7 +4,7 @@
 ### Step 2: Signup
 ![](img/signup.png)
 ### Step 2: Define your account settings
-![](img/accoubt-settings.png)
+![](img/account-settings.png)
 ### Step 2: Choose your authentication providers
 ![](img/auth-providers.png)
 
