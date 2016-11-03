@@ -40,14 +40,11 @@ This app contains an ID Provider using Auth0 single sign-on services.
     ```
                 
 ### Step 6: Define the allowed callback URLs
-
 1. Go back to your Auth0 Client settings
-
 1. Define the ID provider callback in the "Allowed Callback URLs"
-The ID provider is listening on "/portal/<branch>/_/idprovider/<userstore>"
-If you have a virtual host mapping hiding "/portal/<branch>", then use the virtual host mapping source + "_/idprovider/<userstore>" 
-For the example above, the full callback URL will be: "https://example.com/_/idprovider/myuserstore"
-
+    * The ID provider is listening on "/portal/[branch]/_/idprovider/[userstore]"
+    * If you have a virtual host mapping hiding "/portal/[branch]", then use the virtual host mapping source + "_/idprovider/<userstore>". 
+    * For the example above, the full callback URL will be: "https://example.com/_/idprovider/myuserstore"
 
 
 ## Releases and Compatibility
