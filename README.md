@@ -10,15 +10,15 @@ This app contains an ID Provider using Auth0 single sign-on services.
 
 ### Step 3: Install the application
 1. In the admin tool "Applications" of your Enonic XP installation, click on "Install". 
-2. Select the tab "Enonic Market", find "Auth0 ID Provider", and click on the link "Install".
+1. Select the tab "Enonic Market", find "Auth0 ID Provider", and click on the link "Install".
 
 ### Step 4: Create and configure the user store
 1. In the admin tool "Users", click on "New".
-2. Fill in the fields and, for the field "ID Provider", select the application "Auth0 ID Provider".
-3. Configure the ID Provider:
-    * Application Domain: Copy the field "Domain" from your client settings in Auth0 clients dashboard
-    * Application Client ID: Copy the field "Client ID" from your client settings in Auth0 clients dashboard
-    * Application secret: Copy the field "Client Secret" from your client settings in Auth0 clients dashboard
+1. Fill in the fields and, for the field "ID Provider", select the application "Auth0 ID Provider".
+1. Configure the ID Provider:
+    * Application Domain: Copy the field "Domain" from your Auth0 client settings.
+    * Application Client ID: Copy the field "Client ID" your Auth0 client settings.
+    * Application secret: Copy the field "Client Secret" your Auth0 client settings.
     * (Optional) Groups: Groups to associate to new users   
             
 ### Step 5: Create and configure the user store
