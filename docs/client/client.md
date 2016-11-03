@@ -9,10 +9,13 @@
 ### Step 2: Configure the client settings
 1. Your application should have the client type "Regular Web Application" and the Token Endpoint Authentication Method "POST".
 ![](img/client-settings.png)
-2. Below, enable "Use Auth0 instead of the IdP to do Single Sign On"
+1. Below, enable "Use Auth0 instead of the IdP to do Single Sign On"
 ![](img/sso-setting.png)
-3. (Recommended) Add the rule "Force email verification"
-![](img/rule.png)
-![](img/rule-2.png)
-![](img/rule-3.png)
+1. (Recommended) Add the rule "Force email verification"
+    1. Create a new rule
+    ![](img/rule.png)
+    1. Select the rule "Force email verification"
+    ![](img/rule-2.png)
+    1. Save
+    ![](img/rule-3.png)
 
