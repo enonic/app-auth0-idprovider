@@ -159,15 +159,22 @@ public class Auth0LoginService
         currentAuth0Identity.setSet( "userMetaData", createPropertySet( auth0User.getUserMetadata() ) );
         currentAuth0Identity.setSet( "appMetaData", createPropertySet( auth0User.getAppMetadata() ) );
         currentAuth0Identity.setInstant( "createdAt", auth0User.getCreatedAt().toInstant() );
+
+        currentAuth0Identity.removeProperty( "identities" );
         for ( UserIdentity userIdentity : auth0User.getIdentities() )
         {
-            currentAuth0Identity.addSet( "identities", createPropertySet( userIdentity ) );
+            currentAuth0Identity.setSet( "identities", createPropertySet( userIdentity ) );
         }
+
         currentAuth0Identity.setSet( "extraInfo", createPropertySet( auth0User.getExtraInfo() ) );
+
+        currentAuth0Identity.removeProperty( "roles" );
         for ( String role : auth0User.getRoles() )
         {
             currentAuth0Identity.addString( "roles", role );
         }
+
+        currentAuth0Identity.removeProperty( "groups" );
         for ( String group : auth0User.getGroups() )
         {
             currentAuth0Identity.addString( "groups", group );
