@@ -17,8 +17,8 @@ This app contains an ID Provider using Auth0 single sign-on services.
 1. Fill in the fields and, for the field "ID Provider", select the application "Auth0 ID Provider".
 1. Configure the ID Provider:
     * Application Domain: Copy the field "Domain" from your Auth0 client settings.
-    * Application Client ID: Copy the field "Client ID" your Auth0 client settings.
-    * Application secret: Copy the field "Client Secret" your Auth0 client settings.
+    * Application Client ID: Copy the field "Client ID" from your Auth0 client settings.
+    * Application secret: Copy the field "Client Secret" from your Auth0 client settings.
     * (Optional) Groups: Groups to associate to new users   
             
 ### Step 5: Create and configure the user store
