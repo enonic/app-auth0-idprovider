@@ -5,8 +5,9 @@ This app contains an ID Provider using Auth0 single sign-on services.
 ## Usage
 
 ### Step 1: If you do not have one, [create an account on https://auth0.com/](docs/account/account.md)
+
 ### Step 2: [Create and configure an Auth0 client](docs/client/client.md)
-TODO (+ Add rule "Force email verification")
+
 ### Step 3: Install the application
 1. In the admin tool "Applications" of your Enonic XP installation, click on "Install". 
 2. Select the tab "Enonic Market", find "Auth0 ID Provider", and click on the link "Install".
@@ -27,16 +28,26 @@ TODO (+ Add rule "Force email verification")
     ```ini
     enabled=true
       
-    mapping.admin.host = localhost
-    mapping.admin.source = /admin
-    mapping.admin.target = /admin
-    mapping.admin.userStore = system
+    mapping.localhost.host = localhost
+    mapping.localhost.source = /
+    mapping.localhost.target = /
+    mapping.localhost.userStore = system
     
-    mapping.mysite.host = localhost
-    mapping.mysite.source = /
-    mapping.mysite.target = /portal/master/mysite
-    mapping.mysite.userStore = myuserstore
+    mapping.example.host = example.com
+    mapping.example.source = /
+    mapping.example.target = /portal/master/mysite
+    mapping.example.userStore = myuserstore
     ```
+                
+### Step 6: Define the allowed callback URLs
+
+1. Go back to your Auth0 Client settings
+
+1. Define the ID provider callback in the "Allowed Callback URLs"
+The ID provider is listening on "/portal/<branch>/_/idprovider/<userstore>"
+If you have a virtual host mapping hiding "/portal/<branch>", then use the virtual host mapping source + "_/idprovider/<userstore>" 
+For the example above, the full callback URL will be: "https://example.com/_/idprovider/myuserstore"
+
 
 
 ## Releases and Compatibility
