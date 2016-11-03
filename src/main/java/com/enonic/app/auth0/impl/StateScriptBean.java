@@ -26,6 +26,13 @@ public class StateScriptBean
         return updatedState;
     }
 
+    public String getFromState( final String key )
+    {
+        final HttpServletRequest httpServletRequest = portalRequestSupplier.get().getRawRequest();
+        final String stateFromRequest = httpServletRequest.getParameter( "state" );
+        return QueryParamUtils.parseFromQueryParams( stateFromRequest, key );
+    }
+
     public void addNonceToState()
     {
         final HttpServletRequest request = portalRequestSupplier.get().getRawRequest();
