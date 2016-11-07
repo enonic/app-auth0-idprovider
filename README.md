@@ -20,6 +20,7 @@ This app contains an ID Provider using Auth0 single sign-on services.
     * Application Client ID: Copy the field "Client ID" from your Auth0 client settings.
     * Application secret: Copy the field "Client Secret" from your Auth0 client settings.
     * (Optional) Groups: Groups to associate to new users   
+1. Apply and save
             
 ### Step 5: Create and configure the user store
 1. Edit the configuration file "com.enonic.xp.web.vhost.cfg", and set the new user store to your virtual host.
@@ -43,7 +44,7 @@ This app contains an ID Provider using Auth0 single sign-on services.
 1. Go back to your Auth0 Client settings
 1. Define the ID provider callback in the "Allowed Callback URLs"
     * The ID provider is listening on "/portal/[branch]/_/idprovider/[userstore]"
-    * If you have a virtual host mapping hiding "/portal/[branch]", then use the virtual host mapping source + "_/idprovider/<userstore>". 
+    * If you have a virtual host mapping hiding "/portal/[branch]", like the example above, then use the virtual host mapping source + "_/idprovider/<userstore>". 
     * For the example above, the full callback URL will be: "https://example.com/_/idprovider/myuserstore"
 
 
