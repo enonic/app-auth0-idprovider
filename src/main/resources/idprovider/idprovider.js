@@ -78,7 +78,10 @@ function generateLoginPage(redirectUrl) {
 
     stateLib.addOrReplaceToState('userstore', userStoreKey);
     var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
-    var callbackUrl = portalLib.url({path: "/auth0", type: 'absolute'});
+    var callbackUrl = portalLib.idProviderUrl({
+        userStore: userStoreKey,
+        type: 'absolute'
+    });
     var authConfig = authLib.getIdProviderConfig();
 
     var params = {
