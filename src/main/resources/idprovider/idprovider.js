@@ -6,7 +6,12 @@ var stateLib = require('/lib/state');
 
 exports.handle401 = function (req) {
     var redirectUrl = retrieveRequestUrl();
-    return redirectToSso(redirectUrl);
+    //return redirectToSso(redirectUrl);
+    return {
+        status: 401,
+        contentType: 'text/html',
+        body: generateLoginPage(redirectUrl)
+    };
 };
 
 function redirectToSso(redirectUrl) {
@@ -33,7 +38,14 @@ function redirectToSso(redirectUrl) {
 }
 
 exports.get = function (req) {
-    if (req.params.state) {
+    if (req.params.error) {
+        log.info("stateLib.getFromState('redirect'): + " + stateLib.getFromState('redirect'));
+        log.info("Error description: + " + req.params.error_description);
+        return {
+            contentType: 'text/html',
+            body: generateLoginPage(stateLib.getFromState('redirect'), req.params.error_description)
+        };
+    } else if (req.params.state) {
         callbackLib.handle();
         return {
             redirect: stateLib.getFromState('redirect')
@@ -70,9 +82,7 @@ function generateRedirectUrl() {
     return generateServerUrl() + '/';
 }
 
-function generateLoginPage(redirectUrl) {
-
-
+function generateLoginPage(redirectUrl, error) {
     var userStoreKey = portalLib.getUserStoreKey();
     stateLib.addNonceToState();
 
@@ -83,11 +93,13 @@ function generateLoginPage(redirectUrl) {
         type: 'absolute'
     });
     var authConfig = authLib.getIdProviderConfig();
+    var showLock = mustacheLib.render(resolve('show-lock.txt'), {error: error});
 
     var params = {
         authConfig: authConfig,
         callbackUrl: callbackUrl,
-        state: state
+        state: state,
+        showLock: showLock
     };
 
     var view = resolve('idprovider.html');

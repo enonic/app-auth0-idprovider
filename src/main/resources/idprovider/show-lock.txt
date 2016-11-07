@@ -1,0 +1,13 @@
+<script>
+{{#error}}
+    lock.show({
+        flashMessage: {
+            type: 'error',
+            text: '{{error}}'
+        }
+    });
+{{/error}}
+{{^error}}
+    lock.show();
+{{/error}}
+</script>

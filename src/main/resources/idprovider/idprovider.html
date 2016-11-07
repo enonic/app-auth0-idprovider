@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Auth0</title>
-    <script src="https://cdn.auth0.com/js/lock/10.2/lock.min.js"></script>
+    <script src="https://cdn.auth0.com/js/lock/10.5.1/lock.min.js"></script>
     <script>
         var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}', {
             auth: {
@@ -20,8 +20,6 @@
     </script>
 </head>
 <body>
-<script>
-    lock.show();
-</script>
+{{{showLock}}}
 </body>
 </html>
