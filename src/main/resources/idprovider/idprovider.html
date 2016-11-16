@@ -12,18 +12,15 @@
                 params: {
                     state: '{{state}}',
                     scope: 'openid profile'
-                },
-                sso: true
+                }
             }
         });
 
         var auth0 = new Auth0({
             domain: '{{authConfig.appDomain}}',
             clientID: '{{authConfig.appClientId}}',
-            callbackOnLocationHash: true
+            callbackURL: '{{callbackUrl}}'
         });
-
-
     </script>
 </head>
 <body>
@@ -36,12 +33,12 @@
             auth0.signin({
                 connection: data.lastUsedConnection.name,
                 scope: 'openid name picture',
-                callbackURL: '{{callbackUrl}}',
                 params: {
                     state: '{{state}}'
-                },
-                sso: true
+                }
             });
+        } else {
+            lock.show();
         }
     });
 </script>
