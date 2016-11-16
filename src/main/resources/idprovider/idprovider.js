@@ -13,33 +13,8 @@ exports.handle401 = function (req) {
     };
 };
 
-function redirectToSso(redirectUrl) {
-    var userStoreKey = portalLib.getUserStoreKey();
-    stateLib.addNonceToState();
-
-    stateLib.addOrReplaceToState('userstore', userStoreKey);
-    var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
-    var callbackUrl = portalLib.idProviderUrl({
-        userStore: userStoreKey,
-        type: 'absolute'
-    });
-    var authConfig = authLib.getIdProviderConfig();
-
-    return {
-        redirect: 'https://' + authConfig.appDomain + "/authorize?" +
-                  "scope=openid%20profile" +
-                  "&response_type=code" +
-                  "&sso=true" +
-                  "&state=" + encodeURIComponent(state) +
-                  "&client_id=" + authConfig.appClientId + "" +
-                  "&redirect_uri=" + encodeURIComponent(callbackUrl)
-    };
-}
-
 exports.get = function (req) {
     if (req.params.error) {
-        log.info("stateLib.getFromState('redirect'): + " + stateLib.getFromState('redirect'));
-        log.info("Error description: + " + req.params.error_description);
         return {
             contentType: 'text/html',
             body: generateLoginPage(stateLib.getFromState('redirect'), req.params.error_description)
@@ -51,13 +26,19 @@ exports.get = function (req) {
         }
     } else {
         var redirectUrl = generateRedirectUrl();
-        return redirectToSso(redirectUrl);
+        return {
+            contentType: 'text/html',
+            body: generateLoginPage(redirectUrl)
+        };
     }
 };
 
 exports.login = function (req) {
     var redirectUrl = req.validTicket ? req.params.redirect : generateRedirectUrl();
-    return redirectToSso(redirectUrl);
+    return {
+        contentType: 'text/html',
+        body: generateLoginPage(redirectUrl)
+    };
 };
 
 exports.logout = function (req) {
@@ -84,7 +65,6 @@ function generateRedirectUrl() {
 function generateLoginPage(redirectUrl, error) {
     var userStoreKey = portalLib.getUserStoreKey();
     stateLib.addNonceToState();
-
     stateLib.addOrReplaceToState('userstore', userStoreKey);
     var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
     var callbackUrl = portalLib.idProviderUrl({

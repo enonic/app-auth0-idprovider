@@ -26,24 +26,34 @@
 <body>
 
 <script>
+    document.body.style.display = 'none';
     auth0.getSSOData(function (err, data) {
-        console.log(err);
-        console.log(data);
-        if (!err && data.sso) {
-            auth0.signin({
-                connection: data.lastUsedConnection.name,
-                scope: 'openid',
-                params: {
-                    state: '{{state}}'
+        if (err) {
+            document.body.style.display = 'inline';
+            lock.show({
+                flashMessage: {
+                    type: 'error',
+                    text: err
                 }
             });
         } else {
-            lock.show({
-                flashMessage: '{{#error}}true{{/error}}' ? {
-                    type: 'error',
-                    text: '{{#error}}{{error}}{{/error}}'
-                } : undefined
-            });
+            if (data.sso) {
+                auth0.signin({
+                    connection: data.lastUsedConnection.name,
+                    scope: 'openid',
+                    params: {
+                        state: '{{state}}'
+                    }
+                });
+            } else {
+                document.body.style.display = 'inline';
+                lock.show({
+                    flashMessage: '{{#error}}true{{/error}}' ? {
+                        type: 'error',
+                        text: '{{#error}}{{error}}{{/error}}'
+                    } : undefined
+                });
+            }
         }
     });
 </script>
