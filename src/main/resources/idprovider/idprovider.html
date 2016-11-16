@@ -17,9 +17,35 @@
             }
         });
 
+        var auth0 = new Auth0({
+            domain: '{{authConfig.appDomain}}',
+            clientID: '{{authConfig.appClientId}}',
+            callbackOnLocationHash: true
+        });
+
+
     </script>
 </head>
 <body>
+
+<script>
+    auth0.getSSOData(function (err, data) {
+        console.log(err);
+        console.log(data);
+        if (!err && data.sso) {
+            auth0.signin({
+                connection: data.lastUsedConnection.name,
+                scope: 'openid name picture',
+                callbackURL: '{{callbackUrl}}',
+                params: {
+                    state: '{{state}}'
+                },
+                sso: true
+            });
+        }
+    });
+</script>
+
 {{{showLock}}}
 </body>
 </html>

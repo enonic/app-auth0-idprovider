@@ -6,7 +6,6 @@ var stateLib = require('/lib/state');
 
 exports.handle401 = function (req) {
     var redirectUrl = retrieveRequestUrl();
-    //return redirectToSso(redirectUrl);
     return {
         status: 401,
         contentType: 'text/html',
