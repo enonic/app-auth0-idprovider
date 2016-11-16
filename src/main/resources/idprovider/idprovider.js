@@ -92,13 +92,12 @@ function generateLoginPage(redirectUrl, error) {
         type: 'absolute'
     });
     var authConfig = authLib.getIdProviderConfig();
-    var showLock = mustacheLib.render(resolve('show-lock.txt'), {error: error});
 
     var params = {
         authConfig: authConfig,
         callbackUrl: callbackUrl,
         state: state,
-        showLock: showLock
+        error: error
     };
 
     var view = resolve('idprovider.html');

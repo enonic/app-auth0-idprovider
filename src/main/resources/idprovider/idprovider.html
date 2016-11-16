@@ -11,7 +11,7 @@
                 redirectUrl: '{{callbackUrl}}',
                 params: {
                     state: '{{state}}',
-                    scope: 'openid profile'
+                    scope: 'openid'
                 }
             }
         });
@@ -32,17 +32,20 @@
         if (!err && data.sso) {
             auth0.signin({
                 connection: data.lastUsedConnection.name,
-                scope: 'openid name picture',
+                scope: 'openid',
                 params: {
                     state: '{{state}}'
                 }
             });
         } else {
-            lock.show();
+            lock.show({
+                flashMessage: '{{#error}}true{{/error}}' ? {
+                    type: 'error',
+                    text: '{{#error}}{{error}}{{/error}}'
+                } : undefined
+            });
         }
     });
 </script>
-
-{{{showLock}}}
 </body>
 </html>
