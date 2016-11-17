@@ -101,7 +101,16 @@ function generateLockOptions(callbackUrl, state) {
         allowedConnections: toArray(authConfig.allowedConnections),
         avatar: authConfig.displayAvatar ? undefined : null,
         closable: false,
-        language: authConfig.language || 'en'
+        language: authConfig.language || 'en',
+        languageDictionary: {
+            title: authConfig.title || 'Auth0'
+        },
+        theme: {
+            labeledSubmitButton: authConfig.labeledSubmitButton,
+            logo: authConfig.logo || undefined,
+            primaryColor: authConfig.primaryColor || undefined
+        },
+        socialButtonStyle: authConfig.socialButtonStyle || 'small'
     };
 }
 

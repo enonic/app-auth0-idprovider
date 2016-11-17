@@ -52,6 +52,43 @@
               <occurrences minimum="1" maximum="1"/>
               <default>en</default>
             </input>
+            <input name="title" type="TextLine">
+              <label>Title</label>
+              <occurrences minimum="1" maximum="1"/>
+              <default>Auth0</default>
+            </input>
+          </items>
+        </field-set>
+        <field-set name="theme">
+          <label>Theme</label>
+          <items>
+            <input name="labeledSubmitButton" type="Checkbox">
+              <label>Labelled submit button</label>
+              <occurrences minimum="0" maximum="1"/>
+              <default>checked</default>
+            </input>
+            <input name="logo" type="TextLine">
+              <label>Logo URL</label>
+              <occurrences minimum="0" maximum="1"/>
+            </input>
+            <input name="primaryColor" type="TextLine">
+              <label>Primary color</label>
+              <occurrences minimum="0" maximum="1"/>
+            </input>
+          </items>
+        </field-set>
+        <field-set name="social">
+          <label>Social</label>
+          <items>
+            <input name="socialButtonStyle" type="ComboBox">
+              <label>Social button style</label>
+              <occurrences minimum="1" maximum="1"/>
+              <config>
+                <option value="small">Small</option>
+                <option value="big">Big</option>
+              </config>
+              <default>small</default>
+            </input>
           </items>
         </field-set>
       </items>
