@@ -13,33 +13,8 @@ exports.handle401 = function (req) {
     };
 };
 
-function redirectToSso(redirectUrl) {
-    var userStoreKey = portalLib.getUserStoreKey();
-    stateLib.addNonceToState();
-
-    stateLib.addOrReplaceToState('userstore', userStoreKey);
-    var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
-    var callbackUrl = portalLib.idProviderUrl({
-        userStore: userStoreKey,
-        type: 'absolute'
-    });
-    var authConfig = authLib.getIdProviderConfig();
-
-    return {
-        redirect: 'https://' + authConfig.appDomain + "/authorize?" +
-                  "scope=openid%20profile" +
-                  "&response_type=code" +
-                  "&sso=true" +
-                  "&state=" + encodeURIComponent(state) +
-                  "&client_id=" + authConfig.appClientId + "" +
-                  "&redirect_uri=" + encodeURIComponent(callbackUrl)
-    };
-}
-
 exports.get = function (req) {
     if (req.params.error) {
-        log.info("stateLib.getFromState('redirect'): + " + stateLib.getFromState('redirect'));
-        log.info("Error description: + " + req.params.error_description);
         return {
             contentType: 'text/html',
             body: generateLoginPage(stateLib.getFromState('redirect'), req.params.error_description)
@@ -51,13 +26,19 @@ exports.get = function (req) {
         }
     } else {
         var redirectUrl = generateRedirectUrl();
-        return redirectToSso(redirectUrl);
+        return {
+            contentType: 'text/html',
+            body: generateLoginPage(redirectUrl)
+        };
     }
 };
 
 exports.login = function (req) {
     var redirectUrl = req.validTicket ? req.params.redirect : generateRedirectUrl();
-    return redirectToSso(redirectUrl);
+    return {
+        contentType: 'text/html',
+        body: generateLoginPage(redirectUrl)
+    };
 };
 
 exports.logout = function (req) {
@@ -84,26 +65,71 @@ function generateRedirectUrl() {
 function generateLoginPage(redirectUrl, error) {
     var userStoreKey = portalLib.getUserStoreKey();
     stateLib.addNonceToState();
-
     stateLib.addOrReplaceToState('userstore', userStoreKey);
     var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
     var callbackUrl = portalLib.idProviderUrl({
         userStore: userStoreKey,
         type: 'absolute'
     });
-    var authConfig = authLib.getIdProviderConfig();
-    var showLock = mustacheLib.render(resolve('show-lock.txt'), {error: error});
+
+    var configScript = mustacheLib.render(resolve('config.txt'), {
+        lockOptions: JSON.stringify(generateLockOptions(callbackUrl, state), null, 2)
+    });
 
     var params = {
-        authConfig: authConfig,
+        configScript: configScript,
+        authConfig: authLib.getIdProviderConfig(),
         callbackUrl: callbackUrl,
         state: state,
-        showLock: showLock
+        error: error
     };
 
     var view = resolve('idprovider.html');
     return mustacheLib.render(view, params);
 };
+
+function generateLockOptions(callbackUrl, state) {
+    var authConfig = authLib.getIdProviderConfig();
+    return {
+        auth: {
+            redirectUrl: callbackUrl,
+            params: {
+                state: state,
+                scope: 'openid'
+            }
+        },
+        allowedConnections: toArray(authConfig.allowedConnections),
+        avatar: authConfig.displayAvatar ? undefined : null,
+        closable: false,
+        language: authConfig.language || 'en',
+        languageDictionary: {
+            title: authConfig.title || 'Auth0'
+        },
+        theme: {
+            labeledSubmitButton: authConfig.labeledSubmitButton,
+            logo: authConfig.logo || undefined,
+            primaryColor: authConfig.primaryColor || undefined
+        },
+        socialButtonStyle: authConfig.socialButtonStyle || 'small',
+        allowLogin: authConfig.allowLogin,
+        allowForgotPassword: authConfig.allowForgotPassword,
+        allowSignUp: authConfig.allowSignUp,
+        initialScreen: authConfig.initialScreen || 'login',
+        loginAfterSignUp: authConfig.loginAfterSignUp
+
+    };
+}
+
+
+function toArray(object, defaultValue) {
+    if (!object) {
+        return defaultValue;
+    }
+    if (object.constructor === Array) {
+        return object;
+    }
+    return [object];
+}
 
 function retrieveRequestUrl() {
     var requestUrlRetriever = __.newBean('com.enonic.app.auth0.impl.RequestUrlRetriever');
