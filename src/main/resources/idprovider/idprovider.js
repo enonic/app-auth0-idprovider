@@ -71,10 +71,14 @@ function generateLoginPage(redirectUrl, error) {
         userStore: userStoreKey,
         type: 'absolute'
     });
+
     var authConfig = authLib.getIdProviderConfig();
+    var authConfigScript = mustacheLib.render(resolve('auth-config-script.txt'), {
+        authConfig: JSON.stringify(authConfig)
+    });
 
     var params = {
-        authConfig: authConfig,
+        authConfigScript: authConfigScript,
         callbackUrl: callbackUrl,
         state: state,
         error: error

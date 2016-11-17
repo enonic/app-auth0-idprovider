@@ -2,25 +2,49 @@
 <id-provider xmlns="urn:enonic:xp:model:1.0">
   <mode>MIXED</mode>
   <config>
-    <input name="appDomain" type="TextLine">
-      <label>Application Domain</label>
-      <occurrences minimum="1" maximum="1"/>
-    </input>
-    <input name="appClientId" type="TextLine">
-      <label>Application Client ID</label>
-      <occurrences minimum="1" maximum="1"/>
-    </input>
-    <input name="appSecret" type="TextLine">
-      <label>Application secret</label>
-      <occurrences minimum="1" maximum="1"/>
-    </input>
-    <input name="defaultPrincipals" type="PrincipalSelector">
-      <label>Default groups and roles</label>
-      <occurrences minimum="0" maximum="0"/>
-      <config>
-        <principalType>GROUP</principalType>
-        <principalType>ROLE</principalType>
-      </config>
-    </input>
+
+    <field-set name="client">
+      <label>Client</label>
+      <items>
+        <input name="appDomain" type="TextLine">
+          <label>Application Domain</label>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="appClientId" type="TextLine">
+          <label>Application Client ID</label>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="appSecret" type="TextLine">
+          <label>Application secret</label>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+      </items>
+    </field-set>
+    <field-set name="groups">
+      <label>Groups</label>
+      <items>
+        <input name="defaultPrincipals" type="PrincipalSelector">
+          <label>Groups</label>
+          <occurrences minimum="0" maximum="0"/>
+          <config>
+            <principalType>GROUP</principalType>
+          </config>
+        </input>
+      </items>
+    </field-set>
+    <field-set name="options">
+      <label>Widget options</label>
+      <items>
+        <field-set name="display">
+          <label>Display</label>
+          <items>
+            <input name="allowedConnections" type="String">
+              <label>Allowed connections</label>
+              <occurrences minimum="0" maximum="0"/>
+            </input>
+          </items>
+        </field-set>
+      </items>
+    </field-set>
   </config>
 </id-provider>
