@@ -98,7 +98,10 @@ function generateLockOptions(callbackUrl, state) {
                 scope: 'openid'
             }
         },
-        allowedConnections: toArray(authConfig.allowedConnections)
+        allowedConnections: toArray(authConfig.allowedConnections),
+        avatar: authConfig.displayAvatar ? undefined : null,
+        closable: false,
+        language: authConfig.language || 'en'
     };
 }
 

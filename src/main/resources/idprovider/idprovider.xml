@@ -38,9 +38,19 @@
         <field-set name="display">
           <label>Display</label>
           <items>
-            <input name="allowedConnections" type="String">
+            <input name="allowedConnections" type="TextLine">
               <label>Allowed connections</label>
               <occurrences minimum="0" maximum="0"/>
+            </input>
+            <input name="displayAvatar" type="Checkbox">
+              <label>Display avatar</label>
+              <occurrences minimum="0" maximum="1"/>
+              <default>checked</default>
+            </input>
+            <input name="language" type="TextLine">
+              <label>Language</label>
+              <occurrences minimum="1" maximum="1"/>
+              <default>en</default>
             </input>
           </items>
         </field-set>
