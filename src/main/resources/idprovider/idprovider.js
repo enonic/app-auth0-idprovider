@@ -72,13 +72,13 @@ function generateLoginPage(redirectUrl, error) {
         type: 'absolute'
     });
 
-    var authConfig = authLib.getIdProviderConfig();
-    var authConfigScript = mustacheLib.render(resolve('auth-config-script.txt'), {
-        authConfig: JSON.stringify(authConfig)
+    var configScript = mustacheLib.render(resolve('config.txt'), {
+        lockOptions: JSON.stringify(generateLockOptions(callbackUrl, state), null, 2)
     });
 
     var params = {
-        authConfigScript: authConfigScript,
+        configScript: configScript,
+        authConfig: authLib.getIdProviderConfig(),
         callbackUrl: callbackUrl,
         state: state,
         error: error
@@ -87,6 +87,31 @@ function generateLoginPage(redirectUrl, error) {
     var view = resolve('idprovider.html');
     return mustacheLib.render(view, params);
 };
+
+function generateLockOptions(callbackUrl, state) {
+    var authConfig = authLib.getIdProviderConfig();
+    return {
+        auth: {
+            redirectUrl: callbackUrl,
+            params: {
+                state: state,
+                scope: 'openid'
+            }
+        },
+        allowedConnections: toArray(authConfig.allowedConnections)
+    };
+}
+
+
+function toArray(object, defaultValue) {
+    if (!object) {
+        return defaultValue;
+    }
+    if (object.constructor === Array) {
+        return object;
+    }
+    return [object];
+}
 
 function retrieveRequestUrl() {
     var requestUrlRetriever = __.newBean('com.enonic.app.auth0.impl.RequestUrlRetriever');

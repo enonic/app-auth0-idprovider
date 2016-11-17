@@ -5,35 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Auth0</title>
     <script src="https://cdn.auth0.com/js/lock/10.5.1/lock.min.js"></script>
-    {{{authConfigScript}}}
+    {{{configScript}}}
     <script>
-        var lock = new Auth0Lock(authConfig.appClientId, authConfig.appDomain, {
-            auth: {
-                redirectUrl: '{{callbackUrl}}',
-                params: {
-                    state: '{{state}}',
-                    scope: 'openid'
-                }
-            },
-            allowedConnections: toArray(authConfig.allowedConnections)
-        });
+        var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}', lockOptions);
 
         var auth0 = new Auth0({
-            domain: authConfig.appDomain,
-            clientID: authConfig.appClientId,
+            domain: '{{authConfig.appDomain}}',
+            clientID: '{{authConfig.appClientId}}',
             callbackURL: '{{callbackUrl}}'
         });
-
-
-        function toArray(object, defaultValue) {
-            if (!object) {
-                return defaultValue;
-            }
-            if (object.constructor === Array) {
-                return object;
-            }
-            return [object];
-        }
     </script>
 </head>
 <body>
