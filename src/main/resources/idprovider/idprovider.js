@@ -110,7 +110,13 @@ function generateLockOptions(callbackUrl, state) {
             logo: authConfig.logo || undefined,
             primaryColor: authConfig.primaryColor || undefined
         },
-        socialButtonStyle: authConfig.socialButtonStyle || 'small'
+        socialButtonStyle: authConfig.socialButtonStyle || 'small',
+        allowLogin: authConfig.allowLogin,
+        allowForgotPassword: authConfig.allowForgotPassword,
+        allowSignUp: authConfig.allowSignUp,
+        initialScreen: authConfig.initialScreen || 'login',
+        loginAfterSignUp: authConfig.loginAfterSignUp
+
     };
 }
 
