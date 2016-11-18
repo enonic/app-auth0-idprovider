@@ -8,16 +8,10 @@
     {{{configScript}}}
     <script>
         var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}', lockOptions);
-
-        var auth0 = new Auth0({
-            domain: '{{authConfig.appDomain}}',
-            clientID: '{{authConfig.appClientId}}',
-            callbackURL: '{{callbackUrl}}'
-        });
+        var auth0 = new Auth0(auth0Options);
     </script>
 </head>
 <body>
-
 <script>
     document.body.style.display = 'none';
     auth0.getSSOData(function (err, data) {
@@ -31,13 +25,7 @@
             });
         } else {
             if (data.sso) {
-                window.location = 'https://{{authConfig.appDomain}}/authorize?' +
-                                  'scope=openid' +
-                                  '&response_type=code' +
-                                  '&sso=true' +
-                                  '&state=' + encodeURIComponent('{{state}}') +
-                                  '&client_id={{authConfig.appClientId}}' +
-                                  '&redirect_uri=' + encodeURIComponent('{{callbackUrl}}');
+                window.location = authorizeUrl;
             } else {
                 document.body.style.display = 'inline';
                 lock.show({

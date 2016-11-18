@@ -73,14 +73,14 @@ function generateLoginPage(redirectUrl, error) {
     });
 
     var configScript = mustacheLib.render(resolve('config.txt'), {
-        lockOptions: JSON.stringify(generateLockOptions(callbackUrl, state), null, 2)
+        lockOptions: JSON.stringify(generateLockOptions(callbackUrl, state)),
+        auth0Options: JSON.stringify(generateAuth0Options(callbackUrl)),
+        authorizeUrl: generateAuthorizeUrl(callbackUrl, state)
     });
 
     var params = {
         configScript: configScript,
         authConfig: authLib.getIdProviderConfig(),
-        callbackUrl: callbackUrl,
-        state: state,
         error: error
     };
 
@@ -116,8 +116,27 @@ function generateLockOptions(callbackUrl, state) {
         allowSignUp: authConfig.allowSignUp,
         initialScreen: authConfig.initialScreen || 'login',
         loginAfterSignUp: authConfig.loginAfterSignUp
-
     };
+}
+
+function generateAuth0Options(callbackUrl) {
+    var authConfig = authLib.getIdProviderConfig();
+    return {
+        domain: authConfig.appDomain,
+        clientID: authConfig.appClientId,
+        callbackURL: callbackUrl
+    };
+}
+
+function generateAuthorizeUrl(callbackUrl, state) {
+    var authConfig = authLib.getIdProviderConfig();
+    return 'https://' + authConfig.appDomain + '/authorize?' +
+           'scope=openid' +
+           '&response_type=code' +
+           '&sso=true' +
+           '&state=' + encodeURIComponent(state) +
+           '&client_id=' + authConfig.appClientId +
+           '&redirect_uri=' + encodeURIComponent(callbackUrl)
 }
 
 
