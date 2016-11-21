@@ -16,10 +16,31 @@ This app contains an ID Provider using Auth0 single sign-on services.
 1. In the admin tool "Users", click on "New".
 1. Fill in the fields and, for the field "ID Provider", select the application "Auth0 ID Provider".
 1. Configure the ID Provider:
-    * Application Domain: Copy the field "Domain" from your Auth0 client settings.
-    * Application Client ID: Copy the field "Client ID" from your Auth0 client settings.
-    * Application secret: Copy the field "Client Secret" from your Auth0 client settings.
-    * (Optional) Groups: Groups to associate to new users   
+    * Client
+        * Domain: Copy the field "Domain" from your Auth0 client settings.
+        * Client ID: Copy the field "Client ID" from your Auth0 client settings.
+        * Client secret: Copy the field "Client Secret" from your Auth0 client settings.
+    * Groups
+        * (Optional) Groups: Groups to associate to new users
+    * Widget Options
+        * Display
+            * Allowed connection: Array of connections. Defaults to all enabled connections. Example: ['Username-Password-Authentication', 'github']
+            * Display avatar: Fetch the user avatar and display name from Gravatar.
+            * Language: The language of the widget.
+            * Title: The title of the widget.
+        * Theme
+            * Labelled submit button: Whether or not the submit button should have a label. When unchecked, an icon will be shown instead.
+            * Logo URL: URL for an image that will be placed in the widget's header. Defaults to Auth0's logo
+            * Primary color: The primary color of the widget. Defaults to #ea5323.
+        * Social
+            * Social button style: Determines the size of the buttons for the social providers.
+        * Database
+            * Allow login: When unchecked, the widget won't display the login screen
+            * Allow forgot password: When unchecked, the widget won't display the "Don't remember your password?" link
+            * Allow signup: When unchecked, the widget won't display the signup screen
+            * Initial screen: The name of the screen that will be shown when the widget is opened.
+            * Login after sign up: Whether or not the user will be automatically signed in after a successful sign up.
+            
 1. Apply and save
             
 ### Step 5: Create and configure the user store

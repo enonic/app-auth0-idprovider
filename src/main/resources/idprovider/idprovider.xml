@@ -7,15 +7,15 @@
       <label>Client</label>
       <items>
         <input name="appDomain" type="TextLine">
-          <label>Application Domain</label>
+          <label>Domain</label>
           <occurrences minimum="1" maximum="1"/>
         </input>
         <input name="appClientId" type="TextLine">
-          <label>Application Client ID</label>
+          <label>Client ID</label>
           <occurrences minimum="1" maximum="1"/>
         </input>
         <input name="appSecret" type="TextLine">
-          <label>Application secret</label>
+          <label>Client secret</label>
           <occurrences minimum="1" maximum="1"/>
         </input>
       </items>
