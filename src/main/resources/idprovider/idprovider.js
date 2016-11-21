@@ -44,13 +44,13 @@ exports.login = function (req) {
 exports.logout = function (req) {
     authLib.logout();
 
-    var redirectUrl = req.validTicket ? req.params.redirect : generateRedirectUrl();
+    var redirectUrl = req.validTicket && req.params.redirect;
     var authConfig = authLib.getIdProviderConfig();
 
     return {
-        redirect: "https://" + authConfig.appDomain + "/v2/logout" +
-                  "?returnTo=" + encodeURIComponent(redirectUrl) +
-                  "&client_id=" + authConfig.appClientId
+        redirect: "https://" + authConfig.appDomain + "/v2/logout?" +
+                  (redirectUrl ? "returnTo=" + encodeURIComponent(redirectUrl) + "&" : "") +
+                  "client_id=" + authConfig.appClientId
     }
 };
 
