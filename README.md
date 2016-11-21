@@ -1,6 +1,9 @@
 # Auth0 ID Provider App for Enonic XP
 
-This app contains an ID Provider using Auth0 single sign-on services.
+Authenticate your users using Auth0 services.
+This ID Providers handles log-in, sign-up, reset password, single sign-on, validation rules, Gravatar profile retrieval.
+The interface is based on Auth0 Lock widget, configurable through the ID Provider configuration.
+
 
 ## Usage
 
