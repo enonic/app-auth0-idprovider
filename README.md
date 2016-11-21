@@ -24,7 +24,7 @@ This app contains an ID Provider using Auth0 single sign-on services.
         * Groups: Groups to associate to new users
     * (Optional) Widget Options
         * Display
-            * Allowed connection: Array of connections. Defaults to all enabled connections. Example: ['Username-Password-Authentication', 'github']
+            * Allowed connection: Connections displayed by the widget. Defaults to all enabled connections. Examples: Username-Password-Authentication, github
             * Display avatar: Fetch the user avatar and display name from Gravatar.
             * Language: The language of the widget.
             * Title: The title of the widget.
