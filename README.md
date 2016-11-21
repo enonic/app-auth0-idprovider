@@ -74,6 +74,7 @@ This app contains an ID Provider using Auth0 single sign-on services.
 | App version | Required XP version | Download |
 | ----------- | ------------------- | -------- |
 | 1.0.0-B1 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.0-B1/auth0idprovider-1.0.0-B1.jar) |
+| 1.0.0-B2 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.0-B2/auth0idprovider-1.0.0-B2.jar) |
 
 
 ## Building and deploying
