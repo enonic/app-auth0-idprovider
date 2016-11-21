@@ -20,9 +20,9 @@ This app contains an ID Provider using Auth0 single sign-on services.
         * Domain: Copy the field "Domain" from your Auth0 client settings.
         * Client ID: Copy the field "Client ID" from your Auth0 client settings.
         * Client secret: Copy the field "Client Secret" from your Auth0 client settings.
-    * Groups
-        * (Optional) Groups: Groups to associate to new users
-    * Widget Options
+    * (Optional) Groups
+        * Groups: Groups to associate to new users
+    * (Optional) Widget Options
         * Display
             * Allowed connection: Array of connections. Defaults to all enabled connections. Example: ['Username-Password-Authentication', 'github']
             * Display avatar: Fetch the user avatar and display name from Gravatar.
