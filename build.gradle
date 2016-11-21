@@ -12,6 +12,7 @@ buildscript {
     }
 }
 
+apply plugin: 'maven'
 apply plugin: 'com.enonic.xp.app'
 
 app {
@@ -28,8 +29,7 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-mustache:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
-    include 'com.squareup.okhttp:okhttp:2.5.0'
-    include 'com.auth0:java-jwt:2.0.1'
+    include 'com.auth0:mvc-auth-commons:0.1.0'
 }
 
 repositories {
@@ -37,5 +37,13 @@ repositories {
     jcenter()
     maven {
         url 'http://repo.enonic.com/public'
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository( url: 'http://repo.enonic.net/artifactory/public' )
+        }
     }
 }
