@@ -24,25 +24,25 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
         * Client ID: Copy the field "Client ID" from your Auth0 client settings.
         * Client secret: Copy the field "Client Secret" from your Auth0 client settings.
     * (Optional) Groups
-        * Groups: Groups to associate to new users
+        * Groups: Groups automatically associated to new users
     * (Optional) Widget Options
         * Display
             * Allowed connection: Connections displayed by the widget. Defaults to all enabled connections. Examples: Username-Password-Authentication, github
-            * Display avatar: Fetch the user avatar and display name from Gravatar.
-            * Language: The language of the widget.
-            * Title: The title of the widget.
+            * Display avatar: Whether or not the user avatar and display name is fetched from Gravatar and display in the widget header.
+            * Language: Language of the widget.
+            * Title: Title of the widget.
         * Theme
             * Labelled submit button: Whether or not the submit button should have a label. When unchecked, an icon will be shown instead.
-            * Logo URL: URL for an image that will be placed in the widget's header. Defaults to Auth0's logo
-            * Primary color: The primary color of the widget. Defaults to #ea5323.
+            * Logo URL: Image URL  that will be placed in the widget's header. Defaults to Auth0's logo
+            * Primary color: Primary color of the widget. Defaults to #ea5323.
         * Social
-            * Social button style: Determines the size of the buttons for the social providers.
+            * Social button style: Size of the buttons for the social providers.
         * Database
             * Allow login: When unchecked, the widget won't display the login screen
             * Allow forgot password: When unchecked, the widget won't display the "Don't remember your password?" link
             * Allow signup: When unchecked, the widget won't display the signup screen
-            * Initial screen: The name of the screen that will be shown when the widget is opened.
-            * Login after sign up: Whether or not the user will be automatically signed in after a successful sign up.
+            * Initial screen: Name of the screen that will be shown when the widget is opened.
+            * Login after sign up: Whether or not the user will be signed in after a successful sign up.
             
 1. Apply and save
             
