@@ -46,7 +46,7 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
             
 1. Apply and save
             
-### Step 5: Create and configure the user store
+### Step 5: Configure the virtual host mapping
 1. Edit the configuration file "com.enonic.xp.web.vhost.cfg", and set the new user store to your virtual host.
 (See [Virtual Host Configuration](http://xp.readthedocs.io/en/stable/operations/configuration.html#configuration-vhost) for more information).
 
@@ -66,10 +66,15 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
                 
 ### Step 6: Define the allowed callback URLs
 1. Go back to your Auth0 Client settings
-1. Define the ID provider callback in the "Allowed Callback URLs"
-    * The ID provider is listening on "/portal/[branch]/_/idprovider/[userstore]"
+1. Define the "Allowed Origins (CORS)"
+    * For the example above, the value would be: https://example.com
+1. Define the ID provider callback URL in the field "Allowed Callback URLs"
+    * The ID provider is listening for callbacks on "/portal/[branch]/_/idprovider/[userstore]"
     * If you have a virtual host mapping hiding "/portal/[branch]", like the example above, then use the virtual host mapping source + "_/idprovider/<userstore>". 
-    * For the example above, the full callback URL will be: "https://example.com/_/idprovider/myuserstore"
+    * For the example above, the value would be: "https://example.com/_/idprovider/myuserstore"
+1. Define the field "Allowed Logout URLs"
+    * If you use the Javascript function "portalLib.logout()" with redirection, please list the redirection URLs in the field "Allowed Logout URLs"
+    * For the example above, the value could be: "https://example.com/"
 
 
 ## Releases and Compatibility
