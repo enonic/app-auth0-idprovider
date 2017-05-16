@@ -17,7 +17,7 @@ apply plugin: 'com.enonic.xp.app'
 
 app {
     name = project.appName
-    displayName = project.displayName
+    displayName = 'Auth0 ID Provider'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
 }

@@ -12,6 +12,18 @@
     </script>
 </head>
 <body>
+
+{{#error}}
+<script>
+    lock.show({
+        flashMessage: {
+            type: 'error',
+            text: '{{.}}'
+        }
+    });
+</script>
+{{/error}}
+{{^error}}
 <script>
     document.body.style.display = 'none';
     auth0.getSSOData(function (err, data) {
@@ -28,15 +40,11 @@
                 window.location = authorizeUrl;
             } else {
                 document.body.style.display = 'inline';
-                lock.show({
-                    flashMessage: '{{#error}}true{{/error}}' ? {
-                        type: 'error',
-                        text: '{{#error}}{{error}}{{/error}}'
-                    } : undefined
-                });
+                lock.show();
             }
         }
     });
 </script>
+{{/error}}
 </body>
 </html>
