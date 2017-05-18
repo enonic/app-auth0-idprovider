@@ -9,11 +9,13 @@ buildscript {
 
     dependencies {
         classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
+        classpath 'com.enonic.gradle:gradle-defaults:1.0.1'
     }
 }
 
 apply plugin: 'maven'
 apply plugin: 'com.enonic.xp.app'
+apply plugin: 'com.enonic.defaults'
 
 app {
     name = project.appName
@@ -37,13 +39,5 @@ repositories {
     jcenter()
     maven {
         url 'http://repo.enonic.com/public'
-    }
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository( url: 'http://repo.enonic.net/artifactory/public' )
-        }
     }
 }
