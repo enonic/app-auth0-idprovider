@@ -95,7 +95,7 @@ function generateLockOptions(callbackUrl, state) {
             redirectUrl: callbackUrl,
             params: {
                 state: state,
-                scope: 'openid'
+                scope: 'openid profile email'
             }
         },
         allowedConnections: toArray(authConfig.allowedConnections),
@@ -131,7 +131,7 @@ function generateAuth0Options(callbackUrl) {
 function generateAuthorizeUrl(callbackUrl, state) {
     var authConfig = authLib.getIdProviderConfig();
     return 'https://' + authConfig.appDomain + '/authorize?' +
-           'scope=openid' +
+           'scope=openid%20profile%20email' +
            '&response_type=code' +
            '&sso=true' +
            '&state=' + encodeURIComponent(state) +

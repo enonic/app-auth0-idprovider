@@ -1,8 +1,6 @@
 package com.enonic.app.auth0.impl;
 
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
@@ -10,13 +8,14 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.auth0.Auth0Client;
-import com.auth0.Auth0ClientImpl;
-import com.auth0.Auth0User;
-import com.auth0.NonceUtils;
-import com.auth0.QueryParamUtils;
+import com.auth0.AuthenticationController;
 import com.auth0.Tokens;
+import com.auth0.client.auth.AuthAPI;
+import com.auth0.exception.Auth0Exception;
+import com.auth0.json.auth.UserInfo;
 
+import com.enonic.app.auth0.impl.user.UserInfoAdapter;
+import com.enonic.app.auth0.impl.utils.QueryParamUtils;
 import com.enonic.xp.security.UserStoreKey;
 
 @Component(immediate = true, service = Auth0CallbackService.class)
@@ -30,62 +29,44 @@ public class Auth0CallbackService
 
     public boolean handle( final HttpServletRequest request )
     {
-        if ( isValidRequest( request ) )
+        try
         {
-            try
-            {
-                final UserStoreKey userStoreKey = getUserStoreKey( request );
-                final Auth0Client auth0Client = createAuth0Client( userStoreKey );
-                final Tokens tokens = fetchTokens( request, auth0Client );
-                final Auth0User auth0User = auth0Client.getUserProfile( tokens );
-                loginService.login( request, auth0User, userStoreKey );
-                NonceUtils.removeNonceFromStorage( request );
-                return true;
-            }
-            catch ( Exception e )
-            {
-                LOG.error( "Error while handling auth0 callback", e );
-            }
+            final UserStoreKey userStoreKey = getUserStoreKey( request );
+            final AuthenticationController authController = createAuthController( userStoreKey );
+            final Tokens tokens = authController.handle( request );
+            final UserInfo userInfo = retrieveUserInfo( userStoreKey, tokens );
+            loginService.login( request, new UserInfoAdapter( userInfo ), userStoreKey );
+            return true;
         }
-        else
+        catch ( Exception e )
         {
-            LOG.error( "Error while handling auth0 callback", new IllegalStateException( "Invalid state or error" ) );
+            LOG.error( "Error while handling auth0 callback", e );
         }
         return false;
     }
 
-    private Auth0Client createAuth0Client( UserStoreKey userStoreKey )
+    private AuthenticationController createAuthController( UserStoreKey userStoreKey )
     {
         final String appClientId = configurationService.getAppClientId( userStoreKey );
         final String appSecret = configurationService.getAppSecret( userStoreKey );
         final String appDomain = configurationService.getAppDomain( userStoreKey );
-        return new Auth0ClientImpl( appClientId, appSecret, appDomain );
+        return AuthenticationController.newBuilder( appDomain, appClientId, appSecret ).build();
     }
 
-
-    protected Tokens fetchTokens( final HttpServletRequest req, final Auth0Client auth0Client )
-        throws IOException
+    private UserInfo retrieveUserInfo( UserStoreKey userStoreKey, Tokens tokens )
+        throws Auth0Exception
     {
-        final String authorizationCode = req.getParameter( "code" );
-        final String redirectUri = req.getRequestURL().toString();
-        return auth0Client.getTokens( authorizationCode, redirectUri );
+        final String appClientId = configurationService.getAppClientId( userStoreKey );
+        final String appSecret = configurationService.getAppSecret( userStoreKey );
+        final String appDomain = configurationService.getAppDomain( userStoreKey );
+
+        final UserInfo userInfo = new AuthAPI( appDomain, appClientId, appSecret ).
+            userInfo( tokens.getAccessToken() ).
+            execute();
+
+        return userInfo;
     }
 
-    protected boolean isValidRequest( final HttpServletRequest req )
-    {
-        return !hasError( req ) && isValidState( req );
-    }
-
-    protected boolean hasError( final HttpServletRequest req )
-    {
-        return req.getParameter( "error" ) != null;
-    }
-
-    protected boolean isValidState( final HttpServletRequest req )
-    {
-        final String stateFromRequest = req.getParameter( "state" );
-        return NonceUtils.matchesNonceInStorage( req, stateFromRequest );
-    }
 
     private UserStoreKey getUserStoreKey( final HttpServletRequest httpServletRequest )
     {
