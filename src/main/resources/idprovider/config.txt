@@ -1,5 +1,6 @@
 <script>
     var lockOptions= {{{lockOptions}}};
     var auth0Options= {{{auth0Options}}};
+    var checkSessionOptions= {{{checkSessionOptions}}};
     var authorizeUrl = '{{{authorizeUrl}}}';
 </script>

@@ -14,6 +14,7 @@ exports.handle401 = function (req) {
 };
 
 exports.get = function (req) {
+    log.info('exports.get:' + JSON.stringify(req, null, 2));
     if (req.params.error) {
         return {
             contentType: 'text/html',
@@ -74,7 +75,8 @@ function generateLoginPage(redirectUrl, error) {
 
     var configScript = mustacheLib.render(resolve('config.txt'), {
         lockOptions: JSON.stringify(generateLockOptions(callbackUrl, state)),
-        auth0Options: JSON.stringify(generateAuth0Options(callbackUrl)),
+        auth0Options: JSON.stringify(generateAuth0Options(callbackUrl, state)),
+        checkSessionOptions: JSON.stringify(generateCheckSessionOptions(callbackUrl, state)),
         authorizeUrl: generateAuthorizeUrl(callbackUrl, state)
     });
 
@@ -93,6 +95,7 @@ function generateLockOptions(callbackUrl, state) {
     return {
         auth: {
             redirectUrl: callbackUrl,
+            sso: true,
             params: {
                 state: state,
                 scope: 'openid profile email'
@@ -119,12 +122,25 @@ function generateLockOptions(callbackUrl, state) {
     };
 }
 
-function generateAuth0Options(callbackUrl) {
+function generateAuth0Options(callbackUrl, state) {
     var authConfig = authLib.getIdProviderConfig();
     return {
         domain: authConfig.appDomain,
         clientID: authConfig.appClientId,
-        callbackURL: callbackUrl
+        // callbackURL: callbackUrl,
+        // redirectUri: callbackUrl,
+        // scope: 'openid profile email',
+        // responseType: 'code',
+
+    };
+}
+
+function generateCheckSessionOptions(callbackUrl, state) {
+    return {
+        responseType: 'token',
+        sso: 'true',
+        // state: state,
+        redirect_uri: callbackUrl
     };
 }
 
@@ -136,7 +152,8 @@ function generateAuthorizeUrl(callbackUrl, state) {
            '&sso=true' +
            '&state=' + encodeURIComponent(state) +
            '&client_id=' + authConfig.appClientId +
-           '&redirect_uri=' + encodeURIComponent(callbackUrl)
+           '&redirect_uri=' + encodeURIComponent(callbackUrl) +
+           '&prompt=none'
 }
 
 
