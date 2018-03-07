@@ -9,8 +9,8 @@
     {{{configScript}}}
     <script>
         var lock = new Auth0Lock('{{authConfig.appClientId}}', '{{authConfig.appDomain}}', lockOptions);
-                var auth0 = new auth0.Authentication(auth0Options);
-//        var auth0 = new auth0.WebAuth(auth0Options);
+//                var auth0 = new auth0.Authentication(auth0Options);
+        var auth0 = new auth0.WebAuth(auth0Options);
     </script>
 </head>
 <body>
@@ -29,53 +29,53 @@
 <script>
 
 
-        auth0.getSSOData(checkSessionOptions,function (err, data) {
-            console.log('err', err);
-            console.log('data', data);
-            if (err) {
-                document.body.style.display = 'inline';
-                lock.show({
-                    flashMessage: {
-                        type: 'error',
-                        text: err
-                    }
-                });
-            } else {
-                if (data.sso) {
-                    window.location = authorizeUrl;
-                } else {
-                    document.body.style.display = 'inline';
-                    lock.show();
-                }
-            }
-        });
+//        auth0.getSSOData(checkSessionOptions,function (err, data) {
+//            console.log('err', err);
+//            console.log('data', data);
+//            if (err) {
+//                document.body.style.display = 'inline';
+//                lock.show({
+//                    flashMessage: {
+//                        type: 'error',
+//                        text: err
+//                    }
+//                });
+//            } else {
+//                if (data.sso) {
+//                    window.location = authorizeUrl;
+//                } else {
+//                    document.body.style.display = 'inline';
+//                    lock.show();
+//                }
+//            }
+//        });
 
 
     //    window.location = authorizeUrl;
 
     //    lock.show();
 
-//    document.body.style.display = 'none';
-//    auth0.checkSession(checkSessionOptions, function (err, authResult) {
-//        console.log('err', err);
-//        console.log('authResult', authResult);
-//        if (err) {
-//            if (err.error === 'login_required') {
-//                document.body.style.display = 'inline';
-//                lock.show();
-//            } else {
-//                document.body.style.display = 'inline';
-//                lock.show({
-//                    flashMessage: {
-//                        type: 'error',
-//                        text: err.error_description
-//                    }
-//                });
-//            }
-//        } else {
-//            window.location = authorizeUrl;
-//        }
-//    });
+    document.body.style.display = 'none';
+    auth0.checkSession(checkSessionOptions, function (err, authResult) {
+        console.log('err', err);
+        console.log('authResult', authResult);
+        if (err) {
+            if (err.error === 'login_required') {
+                document.body.style.display = 'inline';
+                lock.show();
+            } else {
+                document.body.style.display = 'inline';
+                lock.show({
+                    flashMessage: {
+                        type: 'error',
+                        text: err.error_description
+                    }
+                });
+            }
+        } else {
+            window.location = authorizeUrl;
+        }
+    });
 </script>
 {{/error}}
 </body>
