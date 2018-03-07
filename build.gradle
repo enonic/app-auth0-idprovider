@@ -15,7 +15,7 @@ buildscript {
 
 apply plugin: 'maven'
 apply plugin: 'com.enonic.xp.app'
-//apply plugin: 'com.enonic.defaults'
+apply plugin: 'com.enonic.defaults'
 
 app {
     name = project.appName
