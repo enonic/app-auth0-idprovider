@@ -128,9 +128,10 @@ function generateAuth0Options(callbackUrl, state) {
         domain: authConfig.appDomain,
         clientID: authConfig.appClientId,
         // callbackURL: callbackUrl,
-        // redirectUri: callbackUrl,
+        redirectUri: callbackUrl,
         // scope: 'openid profile email',
         // responseType: 'code',
+        // redirect_uri: callbackUrl
 
     };
 }
