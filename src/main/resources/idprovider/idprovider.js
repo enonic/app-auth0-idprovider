@@ -14,7 +14,6 @@ exports.handle401 = function (req) {
 };
 
 exports.get = function (req) {
-    log.info('exports.get:' + JSON.stringify(req, null, 2));
     if (req.params.error) {
         return {
             contentType: 'text/html',
@@ -127,11 +126,6 @@ function generateAuth0Options(callbackUrl, state) {
     return {
         domain: authConfig.appDomain,
         clientID: authConfig.appClientId,
-        // callbackURL: callbackUrl,
-        redirectUri: callbackUrl,
-        // scope: 'openid profile email',
-        // responseType: 'code',
-        // redirect_uri: callbackUrl
 
     };
 }
@@ -140,7 +134,6 @@ function generateCheckSessionOptions(callbackUrl, state) {
     return {
         responseType: 'token',
         sso: 'true',
-        // state: state,
         redirect_uri: callbackUrl
     };
 }
