@@ -20,9 +20,15 @@ exports.get = function (req) {
             body: generateLoginPage(stateLib.getFromState('redirect'), req.params.error_description)
         };
     } else if (req.params.state) {
-        callbackLib.handle();
-        return {
-            redirect: stateLib.getFromState('redirect')
+        var success = callbackLib.handle();
+        if (success) {
+            return {
+                redirect: stateLib.getFromState('redirect')
+            }
+        } else {
+            return {
+                status: 500
+            }
         }
     } else {
         var redirectUrl = generateRedirectUrl();
