@@ -83,6 +83,7 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
 | ----------- | ------------------- | -------- |
 | 1.0.0 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.0/auth0idprovider-1.0.0.jar) |
 | 1.0.1 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.1/auth0idprovider-1.0.1.jar) |
+| 2.0.0 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.0/auth0idprovider-2.0.0.jar) |
 
 
 ## Building and deploying

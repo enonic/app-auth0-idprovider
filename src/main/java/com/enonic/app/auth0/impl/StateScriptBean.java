@@ -4,10 +4,9 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.auth0.NonceUtils;
-import com.auth0.QueryParamUtils;
-import com.auth0.SessionUtils;
-
+import com.enonic.app.auth0.impl.utils.NonceUtils;
+import com.enonic.app.auth0.impl.utils.QueryParamUtils;
+import com.enonic.app.auth0.impl.utils.SessionUtils;
 import com.enonic.xp.portal.PortalRequest;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;

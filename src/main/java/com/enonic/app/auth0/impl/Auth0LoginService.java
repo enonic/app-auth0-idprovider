@@ -9,11 +9,10 @@ import javax.servlet.http.HttpSession;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.auth0.Auth0User;
-import com.auth0.authentication.result.UserIdentity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.enonic.app.auth0.impl.user.Auth0User;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.data.PropertySet;
@@ -150,60 +149,15 @@ public class Auth0LoginService
         //Update the auth0 identity
         currentAuth0Identity.setString( "userId", auth0User.getUserId() );
         currentAuth0Identity.setString( "name", auth0User.getName() );
+        currentAuth0Identity.setString( "familyName", auth0User.getFamilyName() );
+        currentAuth0Identity.setString( "givenName", auth0User.getGivenName() );
+        currentAuth0Identity.setString( "middleName", auth0User.getMiddleName() );
         currentAuth0Identity.setString( "nickname", auth0User.getNickname() );
         currentAuth0Identity.setString( "picture", auth0User.getPicture() );
+        currentAuth0Identity.setInstant( "updatedAt", auth0User.getUpdatedAt() );
         currentAuth0Identity.setString( "email", auth0User.getEmail() );
         currentAuth0Identity.setBoolean( "emailVerified", auth0User.isEmailVerified() );
-        currentAuth0Identity.setString( "givenName", auth0User.getGivenName() );
-        currentAuth0Identity.setString( "familyName", auth0User.getFamilyName() );
-        currentAuth0Identity.setSet( "userMetaData", createPropertySet( auth0User.getUserMetadata() ) );
-        currentAuth0Identity.setSet( "appMetaData", createPropertySet( auth0User.getAppMetadata() ) );
-        currentAuth0Identity.setInstant( "createdAt", auth0User.getCreatedAt().toInstant() );
-
-        currentAuth0Identity.removeProperty( "identities" );
-        for ( UserIdentity userIdentity : auth0User.getIdentities() )
-        {
-            currentAuth0Identity.setSet( "identities", createPropertySet( userIdentity ) );
-        }
-
-        currentAuth0Identity.setSet( "extraInfo", createPropertySet( auth0User.getExtraInfo() ) );
-
-        currentAuth0Identity.removeProperty( "roles" );
-        for ( String role : auth0User.getRoles() )
-        {
-            currentAuth0Identity.addString( "roles", role );
-        }
-
-        currentAuth0Identity.removeProperty( "groups" );
-        for ( String group : auth0User.getGroups() )
-        {
-            currentAuth0Identity.addString( "groups", group );
-        }
-    }
-
-    private PropertySet createPropertySet( final UserIdentity userIdentity )
-    {
-        final PropertySet propertySet = new PropertySet();
-        propertySet.setString( "id", userIdentity.getId() );
-        propertySet.setString( "connection", userIdentity.getConnection() );
-        propertySet.setString( "provider", userIdentity.getProvider() );
-        propertySet.setBoolean( "social", userIdentity.isSocial() );
-        propertySet.setSet( "profileInfo", createPropertySet( userIdentity.getProfileInfo() ) );
-        return propertySet;
-    }
-
-    private PropertySet createPropertySet( final Map<String, Object> value )
-    {
-        if ( value == null )
-        {
-            return null;
-        }
-
-        //TODO Is there no more optimized method for Map to PropertySet?
-        final JsonNode jsonNode = createJsonNode( value );
-        return new JsonToPropertyTreeTranslator( null, false ).
-            translate( jsonNode ).
-            getRoot();
+        
     }
 
     private JsonNode createJsonNode( final Map<String, Object> value )

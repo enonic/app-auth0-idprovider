@@ -31,7 +31,11 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-mustache:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
-    include 'com.auth0:mvc-auth-commons:0.1.0'
+    include( 'com.auth0:mvc-auth-commons:1.0.0' ) {
+        exclude group: 'javax.servlet', module: 'javax.servlet-api'
+        exclude group: 'com.google.guava', module: 'guava'
+    }
+    include 'org.apache.httpcomponents:httpclient:4.5'
 }
 
 repositories {
