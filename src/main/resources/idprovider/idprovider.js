@@ -139,7 +139,6 @@ function generateAuth0Options(callbackUrl, state) {
 function generateCheckSessionOptions(callbackUrl, state) {
     return {
         responseType: 'token',
-        sso: 'true',
         redirect_uri: callbackUrl
     };
 }
