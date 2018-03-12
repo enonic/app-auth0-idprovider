@@ -1,0 +1,11 @@
+Licenses used by Auth0 ID Provider'
+
+    Auth0 Java MVC Commons
+    MIT License
+    https://raw.githubusercontent.com/auth0/auth0-java-mvc-common/master/LICENSE
+    
+    Apache HttpComponents
+    Apache License 2.0
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    
