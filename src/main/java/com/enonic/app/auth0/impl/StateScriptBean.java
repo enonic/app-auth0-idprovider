@@ -25,17 +25,17 @@ public class StateScriptBean
         return updatedState;
     }
 
-    public String getFromState( final String key )
-    {
-        final HttpServletRequest httpServletRequest = portalRequestSupplier.get().getRawRequest();
-        final String stateFromRequest = httpServletRequest.getParameter( "state" );
-        return QueryParamUtils.parseFromQueryParams( stateFromRequest, key );
-    }
-
     public void addNonceToState()
     {
         final HttpServletRequest request = portalRequestSupplier.get().getRawRequest();
         NonceUtils.addNonceToStorage( request );
+    }
+
+    public String getFromState( final String key )
+    {
+        final HttpServletRequest request = portalRequestSupplier.get().getRawRequest();
+        final String stateFromSession = SessionUtils.getState( request ) != null ? SessionUtils.getState( request ) : "";
+        return QueryParamUtils.parseFromQueryParams( stateFromSession, key );
     }
 
     @Override
