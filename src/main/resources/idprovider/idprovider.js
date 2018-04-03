@@ -14,29 +14,25 @@ exports.handle401 = function (req) {
 };
 
 exports.get = function (req) {
+    var redirectUrl = stateLib.getFromState('redirect') || generateRedirectUrl();
     if (req.params.error) {
         return {
             contentType: 'text/html',
-            body: generateLoginPage(stateLib.getFromState('redirect'), req.params.error_description)
+            body: generateLoginPage(redirectUrl, req.params.error_description)
         };
     } else if (req.params.state) {
         var success = callbackLib.handle();
         if (success) {
             return {
-                redirect: stateLib.getFromState('redirect')
-            }
-        } else {
-            return {
-                status: 500
+                redirect: redirectUrl
             }
         }
-    } else {
-        var redirectUrl = generateRedirectUrl();
-        return {
-            contentType: 'text/html',
-            body: generateLoginPage(redirectUrl)
-        };
     }
+    
+    return {
+        contentType: 'text/html',
+        body: generateLoginPage(redirectUrl)
+    };
 };
 
 exports.login = function (req) {
