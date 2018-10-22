@@ -17,7 +17,6 @@ import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.data.PropertySet;
 import com.enonic.xp.data.PropertyTree;
-import com.enonic.xp.lib.content.mapper.JsonToPropertyTreeTranslator;
 import com.enonic.xp.query.expr.ConstraintExpr;
 import com.enonic.xp.query.expr.QueryExpr;
 import com.enonic.xp.query.parser.QueryParser;
@@ -157,7 +156,7 @@ public class Auth0LoginService
         currentAuth0Identity.setInstant( "updatedAt", auth0User.getUpdatedAt() );
         currentAuth0Identity.setString( "email", auth0User.getEmail() );
         currentAuth0Identity.setBoolean( "emailVerified", auth0User.isEmailVerified() );
-        
+
     }
 
     private JsonNode createJsonNode( final Map<String, Object> value )
