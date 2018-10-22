@@ -1,5 +1,5 @@
 var authLib = require('/lib/xp/auth');
-var mustacheLib = require('/lib/xp/mustache');
+var mustacheLib = require('/lib/mustache');
 var portalLib = require('/lib/xp/portal');
 var callbackLib = require('/lib/callback');
 var stateLib = require('/lib/state');
@@ -28,7 +28,7 @@ exports.get = function (req) {
             }
         }
     }
-    
+
     return {
         contentType: 'text/html',
         body: generateLoginPage(redirectUrl)
