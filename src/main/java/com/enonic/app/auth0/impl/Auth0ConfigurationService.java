@@ -11,14 +11,14 @@ import com.enonic.xp.context.Context;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.data.PropertyTree;
-import com.enonic.xp.security.AuthConfig;
+import com.enonic.xp.security.IdProvider;
+import com.enonic.xp.security.IdProviderConfig;
+import com.enonic.xp.security.IdProviderKey;
 import com.enonic.xp.security.PrincipalKey;
 import com.enonic.xp.security.PrincipalKeys;
 import com.enonic.xp.security.RoleKeys;
 import com.enonic.xp.security.SecurityService;
 import com.enonic.xp.security.User;
-import com.enonic.xp.security.UserStore;
-import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.security.auth.AuthenticationInfo;
 
 @Component(service = Auth0ConfigurationService.class)
@@ -26,49 +26,50 @@ public class Auth0ConfigurationService
 {
     private SecurityService securityService;
 
-    public String getAppDomain( final UserStoreKey userStoreKey )
+    public String getAppDomain( final IdProviderKey idProviderKey )
     {
-        return getStringProperty( userStoreKey, "appDomain" );
+        return getStringProperty( idProviderKey, "appDomain" );
     }
 
-    public String getAppClientId( final UserStoreKey userStoreKey )
+    public String getAppClientId( final IdProviderKey idProviderKey )
     {
-        return getStringProperty( userStoreKey, "appClientId" );
+        return getStringProperty( idProviderKey, "appClientId" );
     }
 
-    public String getAppSecret( final UserStoreKey userStoreKey )
+    public String getAppSecret( final IdProviderKey idProviderKey )
     {
-        return getStringProperty( userStoreKey, "appSecret" );
+        return getStringProperty( idProviderKey, "appSecret" );
     }
 
-    public PrincipalKeys getDefaultPrincipals( final UserStoreKey userStoreKey )
+    public PrincipalKeys getDefaultPrincipals( final IdProviderKey idProviderKey )
     {
         final ImmutableSet.Builder<PrincipalKey> principalKeySet = ImmutableSet.builder();
-        for ( String propertyValue : getStringProperties( userStoreKey, "defaultPrincipals" ) )
+        for ( String propertyValue : getStringProperties( idProviderKey, "defaultPrincipals" ) )
         {
             principalKeySet.add( PrincipalKey.from( propertyValue ) );
         }
         return PrincipalKeys.from( principalKeySet.build() );
     }
 
-    private String getStringProperty( final UserStoreKey userStoreKey, final String propertyPath )
+    private String getStringProperty( final IdProviderKey idProviderKey, final String propertyPath )
     {
-        final PropertyTree propertyTree = retrieveConfig( userStoreKey );
+        final PropertyTree propertyTree = retrieveConfig( idProviderKey );
         return propertyTree == null ? null : propertyTree.getString( propertyPath );
     }
 
-    private Iterable<String> getStringProperties( final UserStoreKey userStoreKey, final String propertyPath )
+    private Iterable<String> getStringProperties( final IdProviderKey idProviderKey, final String propertyPath )
     {
-        final PropertyTree propertyTree = retrieveConfig( userStoreKey );
+        final PropertyTree propertyTree = retrieveConfig( idProviderKey );
         return propertyTree == null ? null : propertyTree.getStrings( propertyPath );
     }
 
 
-    private PropertyTree retrieveConfig( final UserStoreKey userStoreKey )
+    private PropertyTree retrieveConfig( final IdProviderKey idProviderKey )
     {
-        final UserStore userStore = userStoreKey == null ? null : runWithAdminRole( () -> securityService.getUserStore( userStoreKey ) );
-        final AuthConfig authConfig = userStore == null ? null : userStore.getAuthConfig();
-        return authConfig == null ? null : authConfig.getConfig();
+        final IdProvider idProvider =
+            idProviderKey == null ? null : runWithAdminRole( () -> securityService.getIdProvider( idProviderKey ) );
+        final IdProviderConfig idProviderConfig = idProvider == null ? null : idProvider.getIdProviderConfig();
+        return idProviderConfig == null ? null : idProviderConfig.getConfig();
     }
 
     private <T> T runWithAdminRole( final Callable<T> callable )

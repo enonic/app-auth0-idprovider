@@ -16,7 +16,7 @@ import com.auth0.json.auth.UserInfo;
 
 import com.enonic.app.auth0.impl.user.UserInfoAdapter;
 import com.enonic.app.auth0.impl.utils.QueryParamUtils;
-import com.enonic.xp.security.UserStoreKey;
+import com.enonic.xp.security.IdProviderKey;
 
 @Component(immediate = true, service = Auth0CallbackService.class)
 public class Auth0CallbackService
@@ -31,11 +31,11 @@ public class Auth0CallbackService
     {
         try
         {
-            final UserStoreKey userStoreKey = getUserStoreKey( request );
-            final AuthenticationController authController = createAuthController( userStoreKey );
+            final IdProviderKey idProviderKey = getIdProviderKey( request );
+            final AuthenticationController authController = createAuthController( idProviderKey );
             final Tokens tokens = authController.handle( request );
-            final UserInfo userInfo = retrieveUserInfo( userStoreKey, tokens );
-            loginService.login( request, new UserInfoAdapter( userInfo ), userStoreKey );
+            final UserInfo userInfo = retrieveUserInfo( idProviderKey, tokens );
+            loginService.login( request, new UserInfoAdapter( userInfo ), idProviderKey );
             return true;
         }
         catch ( Exception e )
@@ -45,20 +45,20 @@ public class Auth0CallbackService
         return false;
     }
 
-    private AuthenticationController createAuthController( UserStoreKey userStoreKey )
+    private AuthenticationController createAuthController( IdProviderKey idProviderKey )
     {
-        final String appClientId = configurationService.getAppClientId( userStoreKey );
-        final String appSecret = configurationService.getAppSecret( userStoreKey );
-        final String appDomain = configurationService.getAppDomain( userStoreKey );
+        final String appClientId = configurationService.getAppClientId( idProviderKey );
+        final String appSecret = configurationService.getAppSecret( idProviderKey );
+        final String appDomain = configurationService.getAppDomain( idProviderKey );
         return AuthenticationController.newBuilder( appDomain, appClientId, appSecret ).build();
     }
 
-    private UserInfo retrieveUserInfo( UserStoreKey userStoreKey, Tokens tokens )
+    private UserInfo retrieveUserInfo( IdProviderKey idProviderKey, Tokens tokens )
         throws Auth0Exception
     {
-        final String appClientId = configurationService.getAppClientId( userStoreKey );
-        final String appSecret = configurationService.getAppSecret( userStoreKey );
-        final String appDomain = configurationService.getAppDomain( userStoreKey );
+        final String appClientId = configurationService.getAppClientId( idProviderKey );
+        final String appSecret = configurationService.getAppSecret( idProviderKey );
+        final String appDomain = configurationService.getAppDomain( idProviderKey );
 
         final UserInfo userInfo = new AuthAPI( appDomain, appClientId, appSecret ).
             userInfo( tokens.getAccessToken() ).
@@ -68,11 +68,11 @@ public class Auth0CallbackService
     }
 
 
-    private UserStoreKey getUserStoreKey( final HttpServletRequest httpServletRequest )
+    private IdProviderKey getIdProviderKey( final HttpServletRequest httpServletRequest )
     {
         final String stateFromRequest = httpServletRequest.getParameter( "state" );
-        final String userStoreKeyString = QueryParamUtils.parseFromQueryParams( stateFromRequest, "userstore" );
-        return UserStoreKey.from( userStoreKeyString );
+        final String idProviderKeyString = QueryParamUtils.parseFromQueryParams( stateFromRequest, "idprovider" );
+        return IdProviderKey.from( idProviderKeyString );
     }
 
     @Reference

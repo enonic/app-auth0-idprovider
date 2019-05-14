@@ -1,5 +1,5 @@
 var authLib = require('/lib/xp/auth');
-var mustacheLib = require('/lib/xp/mustache');
+var mustacheLib = require('/lib/mustache');
 var portalLib = require('/lib/xp/portal');
 var callbackLib = require('/lib/callback');
 var stateLib = require('/lib/state');
@@ -65,12 +65,12 @@ function generateRedirectUrl() {
 }
 
 function generateLoginPage(redirectUrl, error) {
-    var userStoreKey = portalLib.getUserStoreKey();
+    var idProviderKey = portalLib.getIdProviderKey();
     stateLib.addNonceToState();
-    stateLib.addOrReplaceToState('userstore', userStoreKey);
+    stateLib.addOrReplaceToState('idprovider', idProviderKey);
     var state = stateLib.addOrReplaceToState('redirect', redirectUrl);
     var callbackUrl = portalLib.idProviderUrl({
-        userStore: userStoreKey,
+        idProviderKey: idProviderKey,
         type: 'absolute'
     });
 

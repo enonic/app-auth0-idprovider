@@ -1,27 +1,15 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-        maven {
-            url 'http://repo.enonic.com/public'
-        }
-    }
-
-    dependencies {
-        classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
-        classpath 'com.enonic.gradle:gradle-defaults:1.0.1'
-    }
+plugins {
+    id 'maven-publish'
+    id 'com.enonic.defaults' version '2.0.1'
+    id 'com.enonic.xp.app' version '2.0.0'
 }
-
-apply plugin: 'maven'
-apply plugin: 'com.enonic.xp.app'
-apply plugin: 'com.enonic.defaults'
 
 app {
     name = project.appName
     displayName = 'Auth0 ID Provider'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
+    systemVersion = "${xpVersion}"
 }
 
 dependencies {
@@ -29,8 +17,8 @@ dependencies {
     compile "com.enonic.xp:portal-api:${xpVersion}"
     compile "com.enonic.xp:web-api:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-mustache:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
+    include "com.enonic.lib:lib-mustache:2.0.0-RC1"
     include( 'com.auth0:mvc-auth-commons:1.0.0' ) {
         exclude group: 'javax.servlet', module: 'javax.servlet-api'
         exclude group: 'com.google.guava', module: 'guava'
@@ -40,8 +28,7 @@ dependencies {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     jcenter()
-    maven {
-        url 'http://repo.enonic.com/public'
-    }
+    xp.enonicRepo()
 }

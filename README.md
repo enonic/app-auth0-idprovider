@@ -2,7 +2,7 @@
 
 Authenticate your users using Auth0 services.
 This ID Providers handles log-in, sign-up, reset password, single sign-on, validation rules, Gravatar profile retrieval.
-The interface is based on Auth0 Lock widget, configurable through the ID Provider configuration.
+The interface is based on Auth0 Lock widget, configurable through the ID Provider App configuration.
 
 
 ## Usage
@@ -17,7 +17,7 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
 
 ### Step 4: Create and configure the user store
 1. In the admin tool "Users", click on "New".
-1. Fill in the fields and, for the field "ID Provider", select the application "Auth0 ID Provider".
+1. Fill in the fields and, for the field "Applications", select the application "Auth0 ID Provider".
 1. Configure the ID Provider:
     * Client
         * Domain: Copy the field "Domain" from your Auth0 client settings.
@@ -56,12 +56,12 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
     mapping.localhost.host = localhost
     mapping.localhost.source = /
     mapping.localhost.target = /
-    mapping.localhost.userStore = system
+    mapping.localhost.idProvider.system = default
     
     mapping.example.host = example.com
     mapping.example.source = /
     mapping.example.target = /portal/master/mysite
-    mapping.example.userStore = myuserstore
+    mapping.example.idProvider.myidprovider = default
     ```
                 
 ### Step 6: Define the allowed callback URLs
@@ -69,9 +69,9 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
 1. Define the "Allowed Origins (CORS)"
     * For the example above, the value would be: https://example.com
 1. Define the ID provider callback URL in the field "Allowed Callback URLs"
-    * The ID provider is listening for callbacks on "/portal/[branch]/_/idprovider/[userstore]"
-    * If you have a virtual host mapping hiding "/portal/[branch]", like the example above, then use the virtual host mapping source + "_/idprovider/<userstore>". 
-    * For the example above, the value would be: "https://example.com/_/idprovider/myuserstore"
+    * The ID provider is listening for callbacks on "/portal/[branch]/_/idprovider/[idprovider]"
+    * If you have a virtual host mapping hiding "/portal/[branch]", like the example above, then use the virtual host mapping source + "_/idprovider/<idprovider>". 
+    * For the example above, the value would be: "https://example.com/_/idprovider/myidprovider"
 1. Define the field "Allowed Logout URLs"
     * If you use the Javascript function "portalLib.logout()" with redirection, please list the redirection URLs in the field "Allowed Logout URLs"
     * For the example above, the value could be: "https://example.com/"
@@ -86,6 +86,7 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
 | 2.0.0 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.0/auth0idprovider-2.0.0.jar) |
 | 2.0.1 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.1/auth0idprovider-2.0.1.jar) |
 | 2.0.2 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.2/auth0idprovider-2.0.2.jar) |
+| 3.0.0 | 7.0.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/3.0.0/auth0idprovider-3.0.0.jar) |
 
 
 ## Building and deploying
