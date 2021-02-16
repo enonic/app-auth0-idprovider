@@ -5,17 +5,17 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 public class QueryParamUtils
 {
     public static String addOrReplaceInQueryParams(final String queryParams, final String key, final String value) {
-        Validate.notNull( queryParams);
-        Validate.notNull(key);
-        Validate.notNull(value);
+        Objects.requireNonNull(queryParams);
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
         final StringBuilder builder = new StringBuilder();
         final String updatedQueryParams = removeFromQueryParams(queryParams, key);
         if (updatedQueryParams.isEmpty()) {
@@ -27,8 +27,8 @@ public class QueryParamUtils
     }
 
     public static String parseFromQueryParams(final String queryParams, final String key) {
-        Validate.notNull(queryParams);
-        Validate.notNull(key);
+        Objects.requireNonNull(queryParams);
+        Objects.requireNonNull(key);
         final List<NameValuePair> params = URLEncodedUtils.parse(queryParams, StandardCharsets.UTF_8);
         for (final NameValuePair param : params) {
             if (key.equals(param.getName())) {
@@ -39,8 +39,8 @@ public class QueryParamUtils
     }
 
     public static boolean keyInQueryParams(final String queryParams, final String key) {
-        Validate.notNull(queryParams);
-        Validate.notNull(key);
+        Objects.requireNonNull(queryParams);
+        Objects.requireNonNull(key);
         final List<NameValuePair> params = URLEncodedUtils.parse(queryParams, StandardCharsets.UTF_8);
         for (final NameValuePair param : params) {
             if (key.equals(param.getName())) {
@@ -51,8 +51,8 @@ public class QueryParamUtils
     }
 
     public static String removeFromQueryParams(final String queryParams, final String key) {
-        Validate.notNull(queryParams);
-        Validate.notNull(key);
+        Objects.requireNonNull(queryParams);
+        Objects.requireNonNull(key);
         final List<NameValuePair> params = URLEncodedUtils.parse( queryParams, StandardCharsets.UTF_8);
         final List<NameValuePair> newParams = new ArrayList<>();
         for (final NameValuePair param : params) {
