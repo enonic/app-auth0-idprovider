@@ -48,7 +48,7 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
             
 ### Step 5: Configure the virtual host mapping
 1. Edit the configuration file "com.enonic.xp.web.vhost.cfg", and set the new user store to your virtual host.
-(See [Virtual Host Configuration](https://developer.enonic.com/docs/xp/stable/deployment/vhosts) for more information).
+(See [Virtual Host Configuration](https://developer.enonic.com/docs/xp/stable/deployment/config#vhost) for more information).
 
     ```ini
     enabled=true
