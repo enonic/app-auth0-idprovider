@@ -48,7 +48,7 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
             
 ### Step 5: Configure the virtual host mapping
 1. Edit the configuration file "com.enonic.xp.web.vhost.cfg", and set the new user store to your virtual host.
-(See [Virtual Host Configuration](http://xp.readthedocs.io/en/stable/operations/configuration.html#configuration-vhost) for more information).
+(See [Virtual Host Configuration](https://developer.enonic.com/docs/xp/stable/deployment/config#vhost) for more information).
 
     ```ini
     enabled=true
@@ -79,14 +79,15 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
 
 ## Releases and Compatibility
 
-| App version | Required XP version | Download |
-| ----------- | ------------------- | -------- |
-| 1.0.0 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.0/auth0idprovider-1.0.0.jar) |
-| 1.0.1 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.1/auth0idprovider-1.0.1.jar) |
-| 2.0.0 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.0/auth0idprovider-2.0.0.jar) |
-| 2.0.1 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.1/auth0idprovider-2.0.1.jar) |
-| 2.0.2 | 6.8.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.2/auth0idprovider-2.0.2.jar) |
-| 3.0.0 | 7.0.0 | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/3.0.0/auth0idprovider-3.0.0.jar) |
+| App version | Required XP version | Download                                                                                                 |
+|-------------|---------------------|----------------------------------------------------------------------------------------------------------|
+| 1.0.0       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.0/auth0idprovider-1.0.0.jar) |
+| 1.0.1       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.1/auth0idprovider-1.0.1.jar) |
+| 2.0.0       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.0/auth0idprovider-2.0.0.jar) |
+| 2.0.1       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.1/auth0idprovider-2.0.1.jar) |
+| 2.0.2       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.2/auth0idprovider-2.0.2.jar) |
+| 3.0.0       | 7.0.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/3.0.0/auth0idprovider-3.0.0.jar) |
+| 3.0.1       | 7.7.4               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/3.0.1/auth0idprovider-3.0.1.jar) |
 
 
 ## Building and deploying

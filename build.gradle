@@ -8,14 +8,14 @@ app {
     name = project.appName
     displayName = 'Auth0 ID Provider'
     vendorName = 'Enonic AS'
-    vendorUrl = 'http://enonic.com'
+    vendorUrl = 'https://enonic.com'
     systemVersion = "${xpVersion}"
 }
 
 dependencies {
-    compile "com.enonic.xp:core-api:${xpVersion}"
-    compile "com.enonic.xp:portal-api:${xpVersion}"
-    compile "com.enonic.xp:web-api:${xpVersion}"
+    implementation "com.enonic.xp:core-api:${xpVersion}"
+    implementation "com.enonic.xp:portal-api:${xpVersion}"
+    implementation "com.enonic.xp:web-api:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.lib:lib-mustache:2.0.0"
@@ -27,6 +27,6 @@ dependencies {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     xp.enonicRepo()
 }
