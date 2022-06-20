@@ -23,7 +23,6 @@ dependencies {
         exclude group: 'javax.servlet', module: 'javax.servlet-api'
         exclude group: 'com.google.guava', module: 'guava'
     }
-    include 'org.apache.httpcomponents:httpclient:4.5.13'
 }
 
 repositories {

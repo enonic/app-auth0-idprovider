@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.enonic.app.auth0.impl.utils.NonceUtils;
 import com.enonic.xp.portal.PortalRequest;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
@@ -20,12 +19,6 @@ public class CallbackScriptBean
     {
         final HttpServletRequest servletRequest = portalRequestSupplier.get().getRawRequest();
         return auth0CallbackServiceSupplier.get().handle( servletRequest );
-    }
-
-    public void addNonceToState()
-    {
-        final HttpServletRequest request = portalRequestSupplier.get().getRawRequest();
-        NonceUtils.addNonceToStorage( request );
     }
 
     @Override
