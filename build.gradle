@@ -18,7 +18,7 @@ dependencies {
     implementation "com.enonic.xp:web-api:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
-    include "com.enonic.lib:lib-mustache:2.0.0"
+    include "com.enonic.lib:lib-mustache:2.1.0"
     include( 'com.auth0:mvc-auth-commons:1.9.2' ) {
         exclude group: 'javax.servlet', module: 'javax.servlet-api'
         exclude group: 'com.google.guava', module: 'guava'
