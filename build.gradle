@@ -19,7 +19,7 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.lib:lib-mustache:2.1.1"
-    include( 'com.auth0:mvc-auth-commons:1.9.5' ) {
+    include( 'com.auth0:mvc-auth-commons:1.10.0' ) {
         exclude group: 'javax.servlet', module: 'javax.servlet-api'
         exclude group: 'com.google.guava', module: 'guava'
     }
