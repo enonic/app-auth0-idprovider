@@ -77,18 +77,6 @@ The interface is based on Auth0 Lock widget, configurable through the ID Provide
     * For the example above, the value could be: "https://example.com/"
 
 
-## Releases and Compatibility
-
-| App version | Required XP version | Download                                                                                                 |
-|-------------|---------------------|----------------------------------------------------------------------------------------------------------|
-| 1.0.0       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.0/auth0idprovider-1.0.0.jar) |
-| 1.0.1       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/1.0.1/auth0idprovider-1.0.1.jar) |
-| 2.0.0       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.0/auth0idprovider-2.0.0.jar) |
-| 2.0.1       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.1/auth0idprovider-2.0.1.jar) |
-| 2.0.2       | 6.8.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/2.0.2/auth0idprovider-2.0.2.jar) |
-| 3.0.0       | 7.0.0               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/3.0.0/auth0idprovider-3.0.0.jar) |
-| 3.0.1       | 7.7.4               | [Download](http://repo.enonic.com/public/com/enonic/app/auth0idprovider/3.0.1/auth0idprovider-3.0.1.jar) |
-
 
 ## Building and deploying
 
