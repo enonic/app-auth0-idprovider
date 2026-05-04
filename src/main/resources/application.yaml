@@ -1,0 +1,5 @@
+kind: "Application"
+title: "Auth0 ID Provider"
+description: "Add Auth0 authentication to your Enonic XP installation"
+vendorName: "Enonic AS"
+vendorUrl: "https://enonic.com"

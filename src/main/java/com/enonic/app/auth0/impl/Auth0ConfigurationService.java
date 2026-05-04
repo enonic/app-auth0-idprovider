@@ -76,7 +76,7 @@ public class Auth0ConfigurationService
     {
         final Context context = ContextAccessor.current();
         final AuthenticationInfo authenticationInfo = AuthenticationInfo.create().
-            user( User.ANONYMOUS ).
+            user( User.anonymous() ).
             principals( RoleKeys.ADMIN ).
             build();
         return ContextBuilder.from( context ).

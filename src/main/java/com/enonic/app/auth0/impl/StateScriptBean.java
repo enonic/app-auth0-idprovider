@@ -5,8 +5,7 @@ import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import com.enonic.app.auth0.impl.utils.QueryParamUtils;
 import com.enonic.xp.portal.PortalRequest;

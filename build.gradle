@@ -1,23 +1,15 @@
 plugins {
     id 'maven-publish'
     id 'com.enonic.defaults' version '2.1.6'
-    id 'com.enonic.xp.app' version '3.6.2'
-}
-
-app {
-    name = project.appName
-    displayName = 'Auth0 ID Provider'
-    vendorName = 'Enonic AS'
-    vendorUrl = 'https://enonic.com'
-    systemVersion = "${xpVersion}"
+    id 'com.enonic.xp.app'
 }
 
 dependencies {
-    implementation "com.enonic.xp:core-api:${xpVersion}"
-    implementation "com.enonic.xp:portal-api:${xpVersion}"
-    implementation "com.enonic.xp:web-api:${xpVersion}"
-    include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-auth:${xpVersion}"
+    implementation xplibs.api.core
+    implementation xplibs.api.portal
+    implementation xplibs.api.web
+    include xplibs.portal
+    include xplibs.auth
     include "com.enonic.lib:lib-mustache:2.1.1"
     include( 'com.auth0:mvc-auth-commons:1.12.0' ) {
         exclude group: 'javax.servlet', module: 'javax.servlet-api'

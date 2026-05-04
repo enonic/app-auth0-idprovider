@@ -1,16 +1,12 @@
 package com.enonic.app.auth0.impl;
 
-import java.util.Map;
 import java.util.concurrent.Callable;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.enonic.app.auth0.impl.user.Auth0User;
 import com.enonic.xp.context.ContextAccessor;
@@ -110,10 +106,8 @@ public class Auth0LoginService
 
     private void authenticate( final HttpServletRequest request, final PrincipalKey principalKey )
     {
-        final VerifiedUsernameAuthToken verifiedUsernameAuthToken = new VerifiedUsernameAuthToken();
-        verifiedUsernameAuthToken.setIdProvider( principalKey.getIdProviderKey() );
-        verifiedUsernameAuthToken.setUsername( principalKey.getId() );
-        verifiedUsernameAuthToken.setRememberMe( true );
+        final VerifiedUsernameAuthToken verifiedUsernameAuthToken =
+            new VerifiedUsernameAuthToken( principalKey.getIdProviderKey(), principalKey.getId() );
         final AuthenticationInfo authenticationInfo =
             runAs( () -> securityService.authenticate( verifiedUsernameAuthToken ), RoleKeys.AUTHENTICATED );
         if ( authenticationInfo.isAuthenticated() )
@@ -159,16 +153,9 @@ public class Auth0LoginService
 
     }
 
-    private JsonNode createJsonNode( final Map<String, Object> value )
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.valueToTree( value );
-    }
-
-
     private <T> T runAs( Callable<T> runnable, PrincipalKey principalKey )
     {
-        final AuthenticationInfo authInfo = AuthenticationInfo.create().principals( principalKey ).user( User.ANONYMOUS ).build();
+        final AuthenticationInfo authInfo = AuthenticationInfo.create().principals( principalKey ).user( User.anonymous() ).build();
         return ContextBuilder.from( ContextAccessor.current() ).authInfo( authInfo ).build().callWith( runnable );
     }
 
